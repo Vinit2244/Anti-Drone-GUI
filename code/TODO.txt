@@ -1,0 +1,65 @@
+TODO: 
+    ? MAVLINK Image Protocol
+
+    # MAVLINK extend packet definition
+    #    timestamp
+    #    character array 240
+
+    # RUST MAVLINK FORK CONNECT
+
+    # create new dialect or edit common
+
+    
+
+    # Date Time
+    2- Wind
+    Rain
+    Sun Intensity
+
+    # Store FOD Data **
+    # Switch Freq: 865 - 915
+
+    ? Hide text layer - Create TileServer or find one with no city labels
+    # Make FOD chips bigger
+    6 - Discuss Color Schema
+    # Rotate Map - Alt + Shift + Drag
+    # Mission Control - (change chip)
+    # Add Dividers
+    # Add Arka Logo
+    # Encrypt Messages
+    # Show Drone Status Skeleton
+    4- Rogue Drone Indicator
+        - Show red icons
+    # Compile for Orin
+    5- Draggable bottom screen
+    ? 1- Path Trails - Make translucent square trails
+    # Disable Drone
+    3- New Drone Icons
+    4- Demo Window
+        - Virtual Drone
+        - Formation Control
+        - Self Healing
+    Swarm Mesh Display
+        - Connect different swarms together using swarm id
+        - Connect swarm leaders to each other
+
+
+    # Pascal VOC format -> YOLOv8 format
+    2- Data from Flight Control
+    2- Squawk Code
+    2- Apron Data
+    2- ADSB Data
+    # Num Satellites
+    # Kill
+    # Land
+    # Kill Status
+    # Make card grey on heartbeat loss
+
+    Offline Maps
+    Change Load Icon
+    Progress Bar for scanning
+    # Strike off cleared (Initially Red)(turn grey)
+    ? Performance
+    Draw 3m radius circle
+    # Card Content Glitching
+    Trails not showing

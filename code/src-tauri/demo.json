@@ -1,0 +1,17 @@
+{
+  "connection_settings": {
+    "comm_links": [
+      {
+        "name": "RFD 900x Master Multipoint",
+        "comm_link_type": {
+          "Serial": {
+            "vid": 1027,
+            "pid": 24577,
+            "baud_rate": 57600
+          }
+        },
+        "auto_connect": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+
+.appContainer {
+  display: grid;
+  grid-template-columns: 66% auto; /* Map takes up 66% of the left side, actions take the rest */
+  grid-template-rows: 10% 66% auto; /* Action menu takes 75% of the top height, fod progress takes the bottom 25% */
+  height: 100%;
+  overflow: hidden;
+}
+
+.alertBar {
+  grid-column: 1 / 3; /* Spans across all columns */
+  grid-row: 1; /* Occupies the first row */
+}
+
+.mapWrapper {
+  grid-column: 1; /* Starts from the first column */
+  grid-row: 2 / 4; /* Occupies the second row */
+}
+
+.actionMenu {
+  grid-column: 2; /* Starts from the second column */
+  grid-row: 2; /* Occupies the first row */
+}
+
+.ol-layer {
+  /* filter: invert(100%) !important; */
+}
+
+.missionControl {
+  grid-column: 2; /* Starts from the second column */
+  grid-row: 3; /* Occupies the second row */
+}
+
+.fod-progress {
+  grid-column: 3; /* Starts from the third column */
+  grid-row: 1 / 3; /* Spans across both rows */
+}
+

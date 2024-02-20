@@ -1,0 +1,244 @@
+import { LineString, Point } from "ol/geom";
+import { getLength } from "ol/sphere";
+import { fromLonLat } from "ol/proj";
+import {
+  useState,
+  RefObject,
+  useMemo,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from "react";
+import {
+  RLayerVector,
+  RFeature,
+  RStyle,
+  RenderEvent,
+  ROverlay,
+  RMap,
+  RPopup,
+  RLayerCluster,
+} from "rlayers";
+import droneIcon from "../assets/mapDrone.svg";
+import selectedDroneIcon from "../assets/targetedDrone.svg";
+import { useRStyle } from "rlayers/style";
+import { getVectorContext } from "ol/render";
+import { listen } from "@tauri-apps/api/event";
+import { PositionUpdatePayload } from "../types/payloads";
+import { selectColor } from "../colorCode";
+import { MapControlContext } from "../contexts/MapControlContext";
+import { useSelector } from "@xstate/react";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+
+function magnitude(x: number, y: number) {
+  return Math.sqrt(x * x + y * y);
+}
+
+function distance(
+  lonLat1: [number, number],
+  lonLat2: [number, number]
+): number {
+  const line = new LineString([fromLonLat(lonLat1), fromLonLat(lonLat2)]);
+  return line.getLength();
+}
+
+const MIN_PATH_TRAIL_DISTANCE: number = 10;
+
+export function DroneMap({
+  id,
+  initialLonLat,
+  initialVelocity,
+  initialVz,
+  initialAltitude,
+  mapRef,
+}: {
+  id: string;
+  initialLonLat: [number, number];
+  initialVelocity: { speed: number; angle: number };
+  initialVz: number;
+  initialAltitude: number;
+  mapRef: RefObject<RMap>;
+}) {
+  const [lonLat, setLonLat] = useState(initialLonLat);
+  const [velocity, setVelocity] = useState(initialVelocity);
+  const [velocityZ, setVelocityZ] = useState(initialVz);
+  const [altitude, setAltitude] = useState(initialAltitude);
+  const { displacementx, displacementy } = useMemo(() => {
+    const length = (velocity?.speed ?? 0) / 50;
+    const angle = velocity?.angle ?? 0;
+    const displacementx = length * Math.cos(angle);
+    const displacementy = length * Math.sin(angle);
+    return { displacementx, displacementy };
+  }, [velocity]);
+  const velocityLineStyle = useRStyle();
+
+  const { mapControlService } = useContext(MapControlContext);
+  const { send } = mapControlService;
+  const isSelected = useSelector(
+    mapControlService,
+    (state) =>
+      state.matches("Drone Selected") && state.context.selectedID === id
+  );
+
+  const [trailPoints, setTrailPoints] = useState<[number, number][]>([]);
+
+  useEffect(() => {
+    const promise = listen(`position_update_${id}`, (event) => {
+      const payload = event.payload as PositionUpdatePayload;
+      const info = payload.payload;
+      const lon = info.lon / 10000000;
+      const lat = info.lat / 10000000;
+      if (lonLat[0] !== lon || lonLat[1] !== lat) setLonLat([lon, lat]);
+      const speed = magnitude(info.vx, info.vy);
+      const angle = 2 * Math.PI - Math.atan2(info.vy, info.vx);
+      const lastTrailPoint = trailPoints.at(-1) ?? initialLonLat;
+      if (distance(lastTrailPoint, [lon, lat]) > MIN_PATH_TRAIL_DISTANCE)
+        setTrailPoints((prevTrailPoints) => [...prevTrailPoints, [lon, lat]]);
+      if (speed !== velocity.speed || angle !== velocity.angle)
+        setVelocity({
+          speed,
+          angle,
+        });
+      const newAlt = info.relative_alt / 1000;
+      if (altitude !== newAlt) setAltitude(newAlt);
+      const newVz = info.vz / 100;
+      if (velocityZ !== newVz) setVelocityZ(newVz);
+    });
+
+    return () => {
+      promise.then((remove) => remove());
+    };
+  }, []);
+
+  const color = useMemo(() => selectColor(+id, false), [id]);
+  const point = useMemo(() => new Point(fromLonLat(lonLat)), [lonLat]);
+  const selectedStyle = useRStyle();
+  const deselectedStyle = useRStyle();
+  const popupRef = useRef<RPopup>(null);
+  useEffect(() => {
+    if (isSelected) popupRef.current?.show();
+    else popupRef.current?.hide();
+  }, [isSelected]);
+  return (
+    <>
+      <RStyle.RStyle ref={deselectedStyle} zIndex={3}>
+        <RStyle.RIcon
+          src={droneIcon}
+          color={color}
+          anchor={[0.5, 0.5]}
+          scale={1.2}
+        />
+      </RStyle.RStyle>
+      <RStyle.RStyle ref={selectedStyle} zIndex={3}>
+        <RStyle.RIcon
+          src={selectedDroneIcon}
+          color={color}
+          anchor={[0.5, 0.5]}
+          scale={1}
+        />
+      </RStyle.RStyle>
+      <RStyle.RStyle ref={velocityLineStyle}>
+        <RStyle.RStroke color="black" width={2} />
+      </RStyle.RStyle>
+      <RLayerVector
+        style={isSelected ? selectedStyle : deselectedStyle}
+        /* @ts-ignore */
+        updateWhileAnimating
+        /* @ts-ignore */
+        updateWhileInteracting
+        // onPostRender={(e: RenderEvent) => {
+        //   const vectorContext = getVectorContext(e);
+        //   vectorContext.setStyle(
+        //     RStyle.RStyle.getStyleStatic(velocityLineStyle)
+        //   );
+        //   const mapOl = mapRef.current?.ol;
+        //   if (mapOl === undefined) return;
+        //   const antiDroneCoordinate = fromLonLat(lonLat);
+        //   const pixelPosition =
+        //     mapOl.getPixelFromCoordinate(antiDroneCoordinate);
+        //   const endPosition = mapOl.getCoordinateFromPixel([
+        //     pixelPosition[0] + displacementx,
+        //     pixelPosition[1] + displacementy,
+        //   ]);
+        //   vectorContext.drawGeometry(
+        //     new LineString([antiDroneCoordinate, endPosition])
+        //   );
+        // }}
+      >
+        <RFeature
+          onClick={useCallback((e: { stopPropagation: () => void }) => {
+            e.stopPropagation();
+            send({ type: "Select Drone", newSelectedDrone: id });
+          }, [])}
+          geometry={point}
+        >
+          <ROverlay>
+            <Paper
+              sx={{
+                width: 20,
+                margin: 0.5,
+                height: 20,
+                display: "grid",
+                placeItems: "center",
+                fontSize: "10px",
+              }}
+            >
+              <Typography
+                sx={{ cursor: "pointer" }}
+                onClick={() => setTrailPoints([])}
+              >
+                {id}
+              </Typography>
+            </Paper>
+          </ROverlay>
+          <RPopup autoPan autoPosition ref={popupRef} trigger="click">
+            <Paper sx={{ margin: "15px", paddingX: "15px", paddingY: "5px" }}>
+              <Typography textAlign="center" variant={"h5"}>
+                Details
+              </Typography>
+              <div>
+                <Typography>Altitude: {altitude}m</Typography>
+              </div>
+              <div>
+                <Typography>Velocity Z: {velocityZ}m/sec</Typography>
+              </div>
+            </Paper>
+          </RPopup>
+        </RFeature>
+      </RLayerVector>
+      {useMemo(
+        () => (
+          <TrailRenderer trailPoints={trailPoints} color={color} />
+        ),
+        [trailPoints, color]
+      )}
+    </>
+  );
+}
+function TrailRenderer({
+  trailPoints,
+  color,
+}: {
+  trailPoints: [number, number][];
+  color: string;
+}) {
+  return (
+    <RLayerCluster distance={15}>
+      <RStyle.RStyle>
+        <RStyle.RCircle radius={2}>
+          <RStyle.RFill color={color} />
+        </RStyle.RCircle>
+      </RStyle.RStyle>
+      {trailPoints.map((lonLat, i) => (
+        <TrailPoint key={i} lonLat={lonLat} />
+      ))}
+    </RLayerCluster>
+  );
+}
+function TrailPoint({ lonLat }: { lonLat: [number, number] }) {
+  return (
+    <RFeature geometry={useMemo(() => new Point(fromLonLat(lonLat)), [])} />
+  );
+}
