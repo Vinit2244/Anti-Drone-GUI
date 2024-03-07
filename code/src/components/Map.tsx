@@ -1,7 +1,10 @@
-import { fromLonLat, getPointResolution } from "ol/proj";
+import React from "react";
+import { get } from "ol/proj";
+import { getCenter } from "ol/extent";
 import "ol/ol.css";
+import { fromLonLat, getPointResolution } from "ol/proj";
 import Paper from "@mui/material/Paper";
-import { RMap, ROSMWebGL, RControl, ROSM, RLayerTileWebGL } from "rlayers";
+import { RMap, ROSMWebGL, RControl, ROSM, RLayerTileWebGL, RLayerImage, RLayerGraticule, RStyle } from "rlayers";
 import { RefObject, useCallback, useContext, useRef } from "react";
 import { DronesMapManager } from "./DronesMapManager";
 import { OnlyConnected } from "./Only";
@@ -10,11 +13,13 @@ import { MapControlContext } from "../contexts/MapControlContext";
 import "./Map.css";
 import { DateTimeDisplay } from "./DateTimeDisplay";
 
-// [Longitude, Latitude] of initial center coordinates
 const centerPoint = [78.34910677877723, 17.445657887972082] as [number, number];
 const center = fromLonLat(centerPoint);
 
-function Map() {
+export default function Simple(): JSX.Element {
+  const [graticule, setGraticule] = React.useState<boolean>(true);
+  const style = RStyle.useRStyle();
+
   const mapRef = useRef() as RefObject<RMap>;
   const { mapControlService } = useContext(MapControlContext);
   const { send } = mapControlService;
@@ -25,7 +30,9 @@ function Map() {
 
   return (
     <Paper className="mapWrapper" style={{ position: "relative" }}>
-      {/* <MapHiderWhenNotConnected /> */}
+      <RStyle.RStyle ref={style}>
+        <RStyle.RStroke color="black" width={1.5} />
+      </RStyle.RStyle>
       <RMap
         width={"100%"}
         height={"100%"}
@@ -36,8 +43,11 @@ function Map() {
         }, [])}
         // noDefaultInteractions
       >
-        {/* <ROSMWebGL /> */}
         <RLayerTileWebGL url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" />
+        <RLayerGraticule
+          visible={graticule}
+          strokeStyle={style}
+        />
         <RControl.RScaleLine />
         <RControl.RZoomSlider />
         <RControl.RRotate autoHide={false} />
@@ -54,5 +64,3 @@ function Map() {
     </Paper>
   );
 }
-
-export default Map;
