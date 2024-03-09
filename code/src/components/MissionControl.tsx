@@ -301,7 +301,7 @@ export function MissionControl() {
           >
             Set AltHold
           </LooperButton> */}
-          {/* <LooperButton
+          <LooperButton
             delay={0}
             cancelChildren={"Stop Setting RTL"}
             onPress={async () => {
@@ -324,8 +324,8 @@ export function MissionControl() {
               }
             }}
           >
-            Set RTL
-          </LooperButton> */}
+            RTH
+          </LooperButton>
           <Button
             variant="outlined"
             onClick={() => {

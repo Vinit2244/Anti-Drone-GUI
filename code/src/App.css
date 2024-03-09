@@ -19,7 +19,7 @@
 
 .actionMenu {
   grid-column: 2; /* Starts from the second column */
-  grid-row: 2; /* Occupies the first row */
+  grid-row: 2 ; /* Occupies the first row */
 }
 
 .ol-layer {

@@ -1,19 +1,23 @@
-import { AppBar } from "@mui/material";
-import { Settings } from "@mui/icons-material";
+// Import the necessary components and hooks
+import React, { useContext, useMemo, useState } from "react";
+import AppBar from "@mui/material/AppBar";
 import IconButton from "@mui/material/IconButton";
+import SettingsIcon from "@mui/icons-material/Settings";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Stack from "@mui/material/Stack";
+import { Settings } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
-import { useContext, useMemo, useState } from "react";
 import { AlertContext } from "../contexts/AlertContext";
 import Modal from "@mui/material/Modal";
 import { SettingsModalContent } from "./SettingsModalContent";
+import ToggleGridButton from "./ToggleGridButton"; // Import the ToggleGridButton component
 
-function AlertBar() {
-  const { alerts } = useContext(AlertContext);
-  const alert = useMemo(() => alerts.at(-1), [alerts]) ?? {
-    severity: "info",
-    alert: "No Alerts to display",
-  };
+function AlertBar({ graticule, toggleGraticule, toggleTheme }: { graticule: boolean; toggleGraticule: () => void; toggleTheme: () => void }) {
+  // // const { alerts } = useContext(AlertContext);
+  // const alert = useMemo(() => alerts.at(-1), [alerts]) ?? {
+  //   severity: "info",
+  //   alert: "No Alerts to display",
+  // };
   const [openSettings, setOpenSettings] = useState(false);
   return (
     <>
@@ -35,14 +39,18 @@ function AlertBar() {
           }}
         >
           <Stack sx={{ marginX: "2%" }} spacing={1} direction="row">
-            <Alert severity={alert.severity} sx={{ flex: 1 }}>
+            {/* <Alert severity={alert.severity} sx={{ flex: 1 }}>
               {alert.alert}
-            </Alert>
+            </Alert> */}
+             <ToggleGridButton onToggle={toggleGraticule} /> {/* Use the ToggleGridButton */}
             <IconButton
               sx={{ width: 50 }}
               onClick={() => setOpenSettings(true)}
             >
               <Settings />
+            </IconButton>
+            <IconButton onClick={toggleTheme}>
+              <Brightness4Icon />
             </IconButton>
           </Stack>
         </AppBar>
@@ -52,3 +60,7 @@ function AlertBar() {
 }
 
 export default AlertBar;
+
+
+
+

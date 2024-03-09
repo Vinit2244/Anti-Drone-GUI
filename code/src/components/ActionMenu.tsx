@@ -12,7 +12,7 @@ function ActionMenu() {
     <>
       <Paper className="actionMenu">
         {/* Displaying the arka aerospace logo */}
-        <Box
+        {/* <Box
           sx={{
             height: "20%",
             display: "grid",
@@ -25,7 +25,7 @@ function ActionMenu() {
             alt="Arka Aerospace"
             draggable={false}
           />
-        </Box>
+        </Box> */}
 
         {/* Displaying the information if the telemetry is connected or not */}
         <Paper
@@ -67,7 +67,7 @@ function ActionMenu() {
           <OnlyConnected>
             <DronesStatus />
           </OnlyConnected>
-          
+
           {/* Template to be shown when no drone is connected */}
           <OnlyConnected not>
             <DronesStatusSkeleton />

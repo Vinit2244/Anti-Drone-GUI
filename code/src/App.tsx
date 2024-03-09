@@ -17,27 +17,41 @@ import { MissionControl } from "./components/MissionControl";
 import { FODProgress } from "./components/FODProgress";
 import { MapControlProvider } from "./contexts/MapControlContext";
 import { FODDataProvider } from "./contexts/FODDataContext";
+import BottomTab from "./components/ToggleGridButton"
 
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
   },
 });
+const lightTheme = createTheme({
+  palette: {
+    mode: "light",
+  },
+});
+
 
 function App() {
+  const [currentTheme, setCurrentTheme] = useState(darkTheme);
+
+  const toggleTheme = () => {
+    setCurrentTheme((prevTheme) => (prevTheme === darkTheme ? lightTheme : darkTheme));
+  };
+
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <AlertProvider>
         <PhaseProvider>
           <MapControlProvider>
             <FODDataProvider>
               <div className="appContainer">
-                <AlertBar />
-                <Map />
+                <Map toggleTheme={toggleTheme} />
                 {/* <FODProgress /> */}
                 <MissionControl />
                 <ActionMenu />
+
+                {/* <BottomTab /> Add the BottomTab component here */}
               </div>
             </FODDataProvider>
           </MapControlProvider>
