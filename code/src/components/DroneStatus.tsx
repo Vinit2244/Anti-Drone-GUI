@@ -23,6 +23,9 @@ import DroneGPSStatus from "./DroneGPSStatus";
 import { HeartbeatPayload, LandedStatePayload } from "../types/payloads";
 import { FLIGHT_MODES } from "../constants/flight_modes";
 import { invoke } from "@tauri-apps/api";
+import DronePortIndicator from "./DronePortIndicator";
+import DroneGroundRadarStrengthIndicator from "./DroneGroundRadarStrengthIndicator"
+import DroneAmmunitionIndicator from "./DroneAmmunitionIndicator"
 
 export function DroneStatus({ id }: { id: string }) {
   const [connected, setConnected] = useState(true);
@@ -177,7 +180,7 @@ export function DroneStatus({ id }: { id: string }) {
         </Box>
       </Modal>
       <Chip
-        sx={{ height: "110px", width: "90%", margin: "auto" }}
+        sx={{ height: "130px", width: "90%", margin: "auto" }}
         color={"success"}
         disabled={!connected}
         variant="outlined"
@@ -303,6 +306,16 @@ export function DroneStatus({ id }: { id: string }) {
                 }}
                 color="success"
               />
+            </Stack>
+            <Stack
+              direction="row"
+              gap={1}
+              alignItems="center"
+              justifyContent="space-evenly"
+            >
+              <DronePortIndicator id={id}/>
+              <DroneGroundRadarStrengthIndicator id={id}/>
+              <DroneAmmunitionIndicator id={id}/>
             </Stack>
           </Stack>
         }

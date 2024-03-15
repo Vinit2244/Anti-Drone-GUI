@@ -1,31 +1,20 @@
 import React, { useCallback } from "react";
-import { Paper, Button } from "@mui/material";
-import {
-  RMap,
-  RLayerTileWebGL,
-  RLayerGraticule,
-  RControl,
-  RStyle,
-} from "rlayers";
+import { Paper } from "@mui/material";
+import "ol/ol.css";
+import { RMap, RLayerTileWebGL, RLayerGraticule, RControl, RStyle } from "rlayers";
 import { fromLonLat, getPointResolution } from "ol/proj";
 import { RefObject, useRef } from "react";
 import { OnlyConnected } from "./Only";
 import { DronesMapManager } from "./DronesMapManager";
 import { FODMapManager } from "./FODMapManager";
-import BottomNavigation from "@mui/material/BottomNavigation";
-import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import { Settings, Home, Info } from "@mui/icons-material";
-import Modal from "@mui/material/Modal";
-import { SettingsModalContent } from "./SettingsModalContent";
-import AlertBar from "./AlertBar"; // Update the import statement
-import ToggleGridButton from "./ToggleGridButton";
-
+import { DateTimeDisplay } from "./DateTimeDisplay";
+import AlertBar from "./AlertBar";
+import "./Map.css"
 
 const centerPoint = [78.34910677877723, 17.445657887972082] as [number, number];
 const center = fromLonLat(centerPoint);
 
 export default function Simple({ toggleTheme }: { toggleTheme: () => void }): JSX.Element {
-  const [openSettings, setOpenSettings] = React.useState<boolean>(true);
   const [graticule, setGraticule] = React.useState<boolean>(true);
   const style = RStyle.useRStyle();
 
@@ -44,33 +33,22 @@ export default function Simple({ toggleTheme }: { toggleTheme: () => void }): JS
       <RStyle.RStyle ref={style}>
         <RStyle.RStroke color={graticule ? "black" : "transparent"} width={1.5} />
       </RStyle.RStyle>
-      <RMap
-        width={"100%"}
-        height={"100%"}
-        initial={{ center, zoom: initialZoom }}
-        ref={mapRef}
-        onClick={useCallback(() => {
-          // Handle map click events
-        }, [])}
-      >
+      <RMap width={"100%"} height={"100%"} initial={{ center, zoom: initialZoom }} ref={mapRef} onClick={useCallback(() => {}, [])}>
         <RLayerTileWebGL url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" />
         <RLayerGraticule visible={graticule} strokeStyle={style} />
         <RControl.RScaleLine />
         <RControl.RZoomSlider />
         <RControl.RRotate autoHide={false} />
         <RControl.RCustom className="date-time-map">
-          {/* Your date-time display component */}
+          <Paper sx={{ padding: "15px" }}>
+            <DateTimeDisplay />
+          </Paper>
         </RControl.RCustom>
         <OnlyConnected>
           <DronesMapManager mapRef={mapRef} />
         </OnlyConnected>
         <FODMapManager />
       </RMap>
-      {/* <div className="toggleGridButton">
-          <Button variant="outlined" onClick={toggleGraticule}>
-            ToggleGrid
-          </Button>
-        </div> */}
       <AlertBar graticule={graticule} toggleGraticule={toggleGraticule} toggleTheme={toggleTheme}/>
     </Paper>
   );

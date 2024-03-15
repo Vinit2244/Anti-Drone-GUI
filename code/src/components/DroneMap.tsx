@@ -45,6 +45,21 @@ function distance(
 }
 
 const MIN_PATH_TRAIL_DISTANCE: number = 10;
+const TEN_MINUTES_IN_MS = 1 * 60 * 1000;
+
+function getColorBasedOnAltitude(altitude: number): string {
+  // You can modify this logic based on your requirements
+  const MAX_ALTITUDE = 200; // You can adjust this value based on your altitude range
+
+  // Normalize altitude to a value between 0 and 1
+  const normalizedAltitude = altitude / MAX_ALTITUDE;
+
+  // Interpolate between red (low altitude) and green (high altitude)
+  const red = Math.round((1 - normalizedAltitude) * 255);
+  const green = Math.round(normalizedAltitude * 255);
+
+  return `rgb(${red}, ${green}, 0)`;
+}
 
 export function DroneMap({
   id,
@@ -82,7 +97,9 @@ export function DroneMap({
       state.matches("Drone Selected") && state.context.selectedID === id
   );
 
-  const [trailPoints, setTrailPoints] = useState<[number, number][]>([]);
+  const [trailPoints, setTrailPoints] = useState<
+    { lonLat: [number, number]; timestamp: number; color: string }[]
+  >([]);
 
   useEffect(() => {
     const promise = listen(`position_update_${id}`, (event) => {
@@ -90,18 +107,46 @@ export function DroneMap({
       const info = payload.payload;
       const lon = info.lon / 10000000;
       const lat = info.lat / 10000000;
+      const newAlt = info.relative_alt / 1000;
+
+      if (mapRef.current) {
+        mapRef.current.ol.getView().setCenter(fromLonLat([lon, lat]));
+      }
+
       if (lonLat[0] !== lon || lonLat[1] !== lat) setLonLat([lon, lat]);
       const speed = magnitude(info.vx, info.vy);
       const angle = 2 * Math.PI - Math.atan2(info.vy, info.vx);
-      const lastTrailPoint = trailPoints.at(-1) ?? initialLonLat;
-      if (distance(lastTrailPoint, [lon, lat]) > MIN_PATH_TRAIL_DISTANCE)
-        setTrailPoints((prevTrailPoints) => [...prevTrailPoints, [lon, lat]]);
+      const lastTrailPoint =
+        trailPoints.length > 0
+          ? trailPoints[trailPoints.length - 1].lonLat
+          : initialLonLat;
+
+      const currentTime = info.time_boot_ms;
+
+      const altitudeColor = getColorBasedOnAltitude(newAlt);
+      if (distance(lastTrailPoint, [lon, lat]) > MIN_PATH_TRAIL_DISTANCE) {
+        setTrailPoints(
+          (prevTrailPoints) =>
+            [
+              ...prevTrailPoints,
+              {
+                lonLat: [lon, lat],
+                timestamp: currentTime,
+                color: altitudeColor,
+              },
+            ] as {
+              lonLat: [number, number];
+              timestamp: number;
+              color: string;
+            }[]
+        );
+      }
+
       if (speed !== velocity.speed || angle !== velocity.angle)
         setVelocity({
           speed,
           angle,
         });
-      const newAlt = info.relative_alt / 1000;
       if (altitude !== newAlt) setAltitude(newAlt);
       const newVz = info.vz / 100;
       if (velocityZ !== newVz) setVelocityZ(newVz);
@@ -112,7 +157,7 @@ export function DroneMap({
     };
   }, []);
 
-  const color = useMemo(() => selectColor(+id, false), [id]);
+  const color_of_drone = useMemo(() => selectColor(+id, false), [id]);
   const point = useMemo(() => new Point(fromLonLat(lonLat)), [lonLat]);
   const selectedStyle = useRStyle();
   const deselectedStyle = useRStyle();
@@ -126,7 +171,7 @@ export function DroneMap({
       <RStyle.RStyle ref={deselectedStyle} zIndex={3}>
         <RStyle.RIcon
           src={droneIcon}
-          color={color}
+          color={color_of_drone}
           anchor={[0.5, 0.5]}
           scale={1.2}
         />
@@ -134,7 +179,7 @@ export function DroneMap({
       <RStyle.RStyle ref={selectedStyle} zIndex={3}>
         <RStyle.RIcon
           src={selectedDroneIcon}
-          color={color}
+          color={color_of_drone}
           anchor={[0.5, 0.5]}
           scale={1}
         />
@@ -147,33 +192,13 @@ export function DroneMap({
         /* @ts-ignore */
         updateWhileAnimating
         /* @ts-ignore */
-        updateWhileInteracting
-        // onPostRender={(e: RenderEvent) => {
-        //   const vectorContext = getVectorContext(e);
-        //   vectorContext.setStyle(
-        //     RStyle.RStyle.getStyleStatic(velocityLineStyle)
-        //   );
-        //   const mapOl = mapRef.current?.ol;
-        //   if (mapOl === undefined) return;
-        //   const antiDroneCoordinate = fromLonLat(lonLat);
-        //   const pixelPosition =
-        //     mapOl.getPixelFromCoordinate(antiDroneCoordinate);
-        //   const endPosition = mapOl.getCoordinateFromPixel([
-        //     pixelPosition[0] + displacementx,
-        //     pixelPosition[1] + displacementy,
-        //   ]);
-        //   vectorContext.drawGeometry(
-        //     new LineString([antiDroneCoordinate, endPosition])
-        //   );
-        // }}
-      >
+        updateWhileInteracting>
         <RFeature
           onClick={useCallback((e: { stopPropagation: () => void }) => {
             e.stopPropagation();
             send({ type: "Select Drone", newSelectedDrone: id });
           }, [])}
-          geometry={point}
-        >
+          geometry={point}>
           <ROverlay>
             <Paper
               sx={{
@@ -183,16 +208,15 @@ export function DroneMap({
                 display: "grid",
                 placeItems: "center",
                 fontSize: "10px",
-              }}
-            >
+              }}>
               <Typography
                 sx={{ cursor: "pointer" }}
-                onClick={() => setTrailPoints([])}
-              >
+                onClick={() => setTrailPoints([])}>
                 {id}
               </Typography>
             </Paper>
           </ROverlay>
+
           <RPopup autoPan autoPosition ref={popupRef} trigger="click">
             <Paper sx={{ margin: "15px", paddingX: "15px", paddingY: "5px" }}>
               <Typography textAlign="center" variant={"h5"}>
@@ -210,35 +234,52 @@ export function DroneMap({
       </RLayerVector>
       {useMemo(
         () => (
-          <TrailRenderer trailPoints={trailPoints} color={color} />
+          <TrailRenderer trailPoints={trailPoints} />
         ),
-        [trailPoints, color]
+        [trailPoints]
       )}
     </>
   );
 }
+
 function TrailRenderer({
   trailPoints,
-  color,
 }: {
-  trailPoints: [number, number][];
-  color: string;
+  trailPoints: { lonLat: [number, number]; timestamp: number; color: string }[];
 }) {
   return (
     <RLayerCluster distance={15}>
-      <RStyle.RStyle>
-        <RStyle.RCircle radius={2}>
-          <RStyle.RFill color={color} />
-        </RStyle.RCircle>
-      </RStyle.RStyle>
-      {trailPoints.map((lonLat, i) => (
-        <TrailPoint key={i} lonLat={lonLat} />
-      ))}
+      {trailPoints.map((point, index) => {
+        if (trailPoints[trailPoints.length - 1]?.timestamp - point.timestamp < TEN_MINUTES_IN_MS) {
+          return (
+            <TrailPoint
+              key={index}
+              lonLat={point.lonLat}
+              color_of_point={point.color}
+            />
+          );
+        } else {
+          console.log("hi");
+          return null;
+        }
+      })}
     </RLayerCluster>
   );
 }
-function TrailPoint({ lonLat }: { lonLat: [number, number] }) {
+
+function TrailPoint({
+  lonLat,
+  color_of_point,
+}: {
+  lonLat: [number, number];
+  color_of_point: string;
+  }) {
   return (
-    <RFeature geometry={useMemo(() => new Point(fromLonLat(lonLat)), [])} />
+    <RStyle.RStyle>
+      <RStyle.RCircle radius={5}>
+        <RStyle.RFill color={color_of_point} />
+      </RStyle.RCircle>
+      <RFeature geometry={new Point(fromLonLat(lonLat))} />
+    </RStyle.RStyle>
   );
 }

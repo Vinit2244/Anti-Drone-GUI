@@ -28,6 +28,21 @@ export interface BatteryState {
   time_remaining: number;
 }
 
+// Port number struct
+export interface PortNumber {
+  port_number: number;  // Integer
+}
+
+// Ground Radar Strength struct
+export interface GroundRadarStrength {
+  strength: number;     // Float in percentage
+}
+
+// Ammunition struct
+export interface Ammunition {
+  ammunition_remaining: number;
+}
+
 export interface HeartbeatPayload {
   system_id: string;
   custom_mode: number;
@@ -47,6 +62,21 @@ export interface LandedStatePayload {
 
 export interface BatteryUpdatePayload {
   payload: BatteryState;
+}
+
+// Payload for port number
+export interface DronePortPayload {
+  payload: PortNumber;
+}
+
+// Payload for Ground Radar Strength
+export interface DroneGroundRadarStrengthPayload {
+  payload: GroundRadarStrength;
+}
+
+// Payload for ammunition
+export interface DroneAmmunitionPayload {
+  payload: Ammunition;
 }
 
 export interface SerialCommLink {
