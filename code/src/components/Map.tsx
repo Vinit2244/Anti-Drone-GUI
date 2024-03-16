@@ -11,6 +11,7 @@ import { DateTimeDisplay } from "./DateTimeDisplay";
 import AlertBar from "./AlertBar";
 import "./Map.css"
 
+
 const centerPoint = [78.34910677877723, 17.445657887972082] as [number, number];
 const center = fromLonLat(centerPoint);
 

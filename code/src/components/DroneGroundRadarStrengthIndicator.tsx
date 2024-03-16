@@ -15,7 +15,7 @@ function GroundRadarStrengthDetecting() {
     );
 }
 
-function GroundRadarStrength({ radars }: { radars: number }) {
+function GroundRadarDetected({ radars }: { radars: number }) {
     return (
       <Chip
         icon={<RadarIcon />}
@@ -24,7 +24,7 @@ function GroundRadarStrength({ radars }: { radars: number }) {
         label={`${radars}%`}
       />
     );
-  }
+}
 
 export default function DroneGroundRadarStrengthIndicator({ id }: { id: string }) {
     const [radarStrength, setRadarStrength] = useState<null | GroundRadarStrength>(null);
@@ -39,7 +39,7 @@ export default function DroneGroundRadarStrengthIndicator({ id }: { id: string }
     }, []);
     const groundRadarStrengthElement = useMemo(() => {
       if (radarStrength === null) return <GroundRadarStrengthDetecting />;
-      else return <GroundRadarStrength radars={radarStrength.strength} />;
+      else return <GroundRadarDetected radars={radarStrength.strength} />;
     }, [radarStrength]);
   
     return groundRadarStrengthElement;

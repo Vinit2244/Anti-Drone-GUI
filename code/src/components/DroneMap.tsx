@@ -1,5 +1,4 @@
 import { LineString, Point } from "ol/geom";
-import { getLength } from "ol/sphere";
 import { fromLonLat } from "ol/proj";
 import {
   useState,
@@ -14,7 +13,6 @@ import {
   RLayerVector,
   RFeature,
   RStyle,
-  RenderEvent,
   ROverlay,
   RMap,
   RPopup,
@@ -23,7 +21,6 @@ import {
 import droneIcon from "../assets/mapDrone.svg";
 import selectedDroneIcon from "../assets/targetedDrone.svg";
 import { useRStyle } from "rlayers/style";
-import { getVectorContext } from "ol/render";
 import { listen } from "@tauri-apps/api/event";
 import { PositionUpdatePayload } from "../types/payloads";
 import { selectColor } from "../colorCode";
@@ -31,6 +28,7 @@ import { MapControlContext } from "../contexts/MapControlContext";
 import { useSelector } from "@xstate/react";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
+import droneBoxIcon from "../assets/droneBox.svg"
 
 function magnitude(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
@@ -168,6 +166,13 @@ export function DroneMap({
   }, [isSelected]);
   return (
     <>
+    <RLayerVector zIndex={10}>
+        <RStyle.RStyle>
+        <RStyle.RIcon src={droneBoxIcon} anchor={[0.5, 0.8]} width={30} height={30} />
+        </RStyle.RStyle>
+        <RFeature geometry={new Point(fromLonLat(initialLonLat))}>
+        </RFeature>
+      </RLayerVector>
       <RStyle.RStyle ref={deselectedStyle} zIndex={3}>
         <RStyle.RIcon
           src={droneIcon}
