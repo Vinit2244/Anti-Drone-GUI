@@ -18,7 +18,9 @@ import {
   RPopup,
   RLayerCluster,
 } from "rlayers";
+import { RFill } from "rlayers/style";
 import droneIcon from "../assets/mapDrone.svg";
+import rougeDroneIcon from "../assets/rogue_drone.svg";
 import selectedDroneIcon from "../assets/targetedDrone.svg";
 import { useRStyle } from "rlayers/style";
 import { listen } from "@tauri-apps/api/event";
@@ -28,7 +30,9 @@ import { MapControlContext } from "../contexts/MapControlContext";
 import { useSelector } from "@xstate/react";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import droneBoxIcon from "../assets/droneBox.svg"
+import Button from "@mui/material/Button";
+import { IsEnemyDrone } from "./IsEnemyDrone";
+import droneBoxIcon from "../assets/droneBox.svg";
 
 function magnitude(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
@@ -43,7 +47,7 @@ function distance(
 }
 
 const MIN_PATH_TRAIL_DISTANCE: number = 10;
-const TEN_MINUTES_IN_MS = 1 * 60 * 1000;
+const TEN_MINUTES_IN_MS = 1 * 60 * 1000; // For now set to 1 minute, change when required
 
 function getColorBasedOnAltitude(altitude: number): string {
   // You can modify this logic based on your requirements
@@ -155,25 +159,20 @@ export function DroneMap({
     };
   }, []);
 
+  // const droneIconSource = parseInt(id) % 2 === 1 ? droneIcon : rougeDroneIcon;
   const color_of_drone = useMemo(() => selectColor(+id, false), [id]);
   const point = useMemo(() => new Point(fromLonLat(lonLat)), [lonLat]);
   const selectedStyle = useRStyle();
   const deselectedStyle = useRStyle();
   const popupRef = useRef<RPopup>(null);
+  console.log("DroneMap: ", +id, color_of_drone);
   useEffect(() => {
     if (isSelected) popupRef.current?.show();
     else popupRef.current?.hide();
   }, [isSelected]);
   return (
     <>
-    <RLayerVector zIndex={10}>
-        <RStyle.RStyle>
-        <RStyle.RIcon src={droneBoxIcon} anchor={[0.5, 0.8]} width={30} height={30} />
-        </RStyle.RStyle>
-        <RFeature geometry={new Point(fromLonLat(initialLonLat))}>
-        </RFeature>
-      </RLayerVector>
-      <RStyle.RStyle ref={deselectedStyle} zIndex={3}>
+      <RStyle.RStyle ref={deselectedStyle} zIndex={15}>
         <RStyle.RIcon
           src={droneIcon}
           color={color_of_drone}
@@ -181,7 +180,7 @@ export function DroneMap({
           scale={1.2}
         />
       </RStyle.RStyle>
-      <RStyle.RStyle ref={selectedStyle} zIndex={3}>
+      <RStyle.RStyle ref={selectedStyle} zIndex={15}>
         <RStyle.RIcon
           src={selectedDroneIcon}
           color={color_of_drone}
@@ -189,6 +188,17 @@ export function DroneMap({
           scale={1}
         />
       </RStyle.RStyle>
+      <RLayerVector zIndex={5}>
+        <RStyle.RStyle>
+          <RStyle.RIcon
+            src={droneBoxIcon}
+            anchor={[0.5, 0.8]}
+            width={30}
+            height={30}
+          />
+        </RStyle.RStyle>
+        <RFeature geometry={new Point(fromLonLat(initialLonLat))}></RFeature>
+      </RLayerVector>
       <RStyle.RStyle ref={velocityLineStyle}>
         <RStyle.RStroke color="black" width={2} />
       </RStyle.RStyle>
@@ -253,38 +263,27 @@ function TrailRenderer({
   trailPoints: { lonLat: [number, number]; timestamp: number; color: string }[];
 }) {
   return (
-    <RLayerCluster distance={15}>
+    <RLayerVector zIndex={5}>
       {trailPoints.map((point, index) => {
-        if (trailPoints[trailPoints.length - 1]?.timestamp - point.timestamp < TEN_MINUTES_IN_MS) {
+        if (
+          trailPoints[trailPoints.length - 1]?.timestamp - point.timestamp <
+          TEN_MINUTES_IN_MS
+        ) {
           return (
-            <TrailPoint
+            <RFeature
               key={index}
-              lonLat={point.lonLat}
-              color_of_point={point.color}
-            />
+              geometry={new Point(fromLonLat(point.lonLat))}>
+              <RStyle.RStyle>
+                <RStyle.RCircle radius={5}>
+                  <RFill color={point.color} />
+                </RStyle.RCircle>
+              </RStyle.RStyle>
+            </RFeature>
           );
         } else {
-          console.log("hi");
           return null;
         }
       })}
-    </RLayerCluster>
-  );
-}
-
-function TrailPoint({
-  lonLat,
-  color_of_point,
-}: {
-  lonLat: [number, number];
-  color_of_point: string;
-  }) {
-  return (
-    <RStyle.RStyle>
-      <RStyle.RCircle radius={5}>
-        <RStyle.RFill color={color_of_point} />
-      </RStyle.RCircle>
-      <RFeature geometry={new Point(fromLonLat(lonLat))} />
-    </RStyle.RStyle>
+    </RLayerVector>
   );
 }
