@@ -1,8 +1,8 @@
 
 .appContainer {
   display: grid;
-  grid-template-columns: 66% auto; /* Map takes up 66% of the left side, actions take the rest */
-  grid-template-rows: 10% 66% auto; /* Action menu takes 75% of the top height, fod progress takes the bottom 25% */
+  grid-template-columns: 66% 34%;
+  grid-template-rows: 10% 66% 24%;
   height: 100%;
   overflow: hidden;
 }
@@ -21,10 +21,6 @@
   grid-column: 2; /* Starts from the second column */
   grid-row: 2 ; /* Occupies the first row */
 
-}
-
-.ol-layer {
-  /* filter: invert(100%) !important; */
 }
 
 .missionControl {

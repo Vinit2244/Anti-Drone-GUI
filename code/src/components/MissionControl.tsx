@@ -1,9 +1,6 @@
-import { Chip, Paper, Typography } from "@mui/material";
-import Button from "@mui/material/Button";
-import { emit } from "@tauri-apps/api/event";
+import { Paper, Typography, Button } from "@mui/material";
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
 import { PhaseContext } from "../contexts/PhaseContext";
-import { ShowTakeoff, ShowEmergencyClear, ShowPause, ShowResume } from "./Only";
 import { useSelector } from "@xstate/react";
 import { FODDataContext } from "../contexts/FODDataContext";
 import { invoke } from "@tauri-apps/api";
@@ -137,7 +134,8 @@ export function MissionControl() {
         className="missionControl"
         style={{
           borderTop: "solid",
-          color: "grey",
+          // color: "grey",
+          overflow: "scroll",
         }}
       >
         <div
@@ -152,15 +150,13 @@ export function MissionControl() {
             Mission Control
           </Typography>
         </div>
-        <Paper
+        <div
           style={{
-            height: "calc(100% - 60px)",
             display: "flex",
             flexWrap: "wrap",
             justifyContent: "center",
             alignItems: "center",
             gap: 7,
-            overflow: "scroll",
           }}
         >
           {/* <ShowTakeoff>
@@ -343,6 +339,7 @@ export function MissionControl() {
             Complete takeoff
           </Button> */}
           <Button
+            disabled={false}
             variant="outlined"
             onClick={() => {
               send("Mission Completed");
@@ -351,7 +348,7 @@ export function MissionControl() {
           >
             Complete Mission
           </Button>
-        </Paper>
+        </div>
       </Paper>
     </>
   );

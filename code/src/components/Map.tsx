@@ -30,7 +30,7 @@ export default function Simple({ toggleTheme }: { toggleTheme: () => void }): JS
   }, []);
 
   return (
-    <Paper className="mapWrapper" style={{ position: "relative" }}>
+    <Paper className="mapWrapper" style={{ position: "relative", height: "100%" }}>
       <RStyle.RStyle ref={style}>
         <RStyle.RStroke color={graticule ? "black" : "transparent"} width={1.5} />
       </RStyle.RStyle>
@@ -50,7 +50,7 @@ export default function Simple({ toggleTheme }: { toggleTheme: () => void }): JS
         </OnlyConnected>
         <FODMapManager />
       </RMap>
-      <AlertBar graticule={graticule} toggleGraticule={toggleGraticule} toggleTheme={toggleTheme}/>
+      <AlertBar toggleGraticule={toggleGraticule} toggleTheme={toggleTheme}/>
     </Paper>
   );
 }

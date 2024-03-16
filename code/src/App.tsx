@@ -42,9 +42,8 @@ function App() {
             <FODDataProvider>
               <div className="appContainer">
                 <Map toggleTheme={toggleTheme} />
-                {/* <FODProgress /> */}
-                <MissionControl />
                 <ActionMenu />
+                <MissionControl />
               </div>
             </FODDataProvider>
           </MapControlProvider>

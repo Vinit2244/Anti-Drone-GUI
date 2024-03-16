@@ -11,8 +11,7 @@ function ActionMenu() {
   return (
     <>
       <Paper className="actionMenu">
-        {/* Displaying the arka aerospace logo */}
-        <Box
+        {/* <Box
           sx={{
             height: "20%",
             display: "grid",
@@ -25,7 +24,7 @@ function ActionMenu() {
             alt="Arka Aerospace"
             draggable={false}
           />
-        </Box>
+        </Box> */}
 
         {/* Displaying the information if the telemetry is connected or not */}
         <Paper
@@ -36,9 +35,9 @@ function ActionMenu() {
             alignItems: "center",
             gap: 10,
             height: "10%",
-            borderTop: "solid",
-            borderTopWidth: "3px",
-            borderTopColor: "grey",
+            // borderTop: "solid",
+            // borderTopWidth: "3px",
+            // borderTopColor: "grey",
           }}
         >
           <TelemetryConnectionStatus />
@@ -56,10 +55,9 @@ function ActionMenu() {
             justifyContent: "center",
             alignItems: "flex-start",
             gap: 10,
-            height: "70%",
+            height: "90%",
             borderTop: "solid",
-            borderTopWidth: "3px",
-            borderTopColor: "grey",
+            // borderTopColor: "grey",
             overflow: "scroll",
           }}
         >
