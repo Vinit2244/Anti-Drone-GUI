@@ -6,6 +6,7 @@ import { DroneStatus } from "./DroneStatus";
 import { PhaseContext } from "../contexts/PhaseContext";
 import { useSelector } from "@xstate/react";
 import { DroneStatusSkeleton } from "./DroneStatusSkeleton";
+import { IsEnemyDrone } from "./IsEnemyDrone";
 import IconButton from "@mui/material/IconButton";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { invoke } from "@tauri-apps/api";
@@ -33,6 +34,9 @@ export function DronesStatus() {
     phaseServices.phaseService,
     (state) => !state.matches("Connected.Initial")
   );
+
+  const friendlyDroneIDs = droneIDs.filter((id) => !IsEnemyDrone(+id));
+
   return (
     <Box width="100%" height="100%">
       <Stack
@@ -42,8 +46,7 @@ export function DronesStatus() {
         width="90%"
         margin="auto"
         paddingY="15px"
-        height="70px"
-      >
+        height="70px">
         <Button
           variant="outlined"
           disabled={disableSelection}
@@ -53,16 +56,14 @@ export function DronesStatus() {
               type: "Set Selected Drones",
               newDrones: droneIDs.map((droneID) => +droneID),
             });
-          }}
-        >
+          }}>
           Select All
         </Button>
         <IconButton
           onClick={() => {
             setDroneIDs([]);
             // invoke("set_messages_stream", { systemId: 0 });
-          }}
-        >
+          }}>
           <RefreshIcon />
         </IconButton>
         <Button
@@ -74,8 +75,7 @@ export function DronesStatus() {
               type: "Set Selected Drones",
               newDrones: [],
             });
-          }}
-        >
+          }}>
           Deselect All
         </Button>
       </Stack>
@@ -83,15 +83,13 @@ export function DronesStatus() {
         gap={2}
         width="100%"
         style={{ height: "calc(100% - 70px)" }}
-        overflow="scroll"
-      >
-        {droneIDs.map((id) => (
+        overflow="scroll">
+        {friendlyDroneIDs.map((id) => (
           <Box
             marginBottom="10px"
             key={id}
             display="grid"
-            sx={{ placeItems: "center" }}
-          >
+            sx={{ placeItems: "center" }}>
             <DroneStatus id={id} />
           </Box>
         ))}
@@ -101,8 +99,7 @@ export function DronesStatus() {
                 marginBottom="10px"
                 key={i.toString() + "dummy"}
                 display="grid"
-                sx={{ placeItems: "center" }}
-              >
+                sx={{ placeItems: "center" }}>
                 <DroneStatusSkeleton label="Empty Drone Slot" />
               </Box>
             ))
