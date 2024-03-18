@@ -18,10 +18,9 @@ import { DronesMapManager } from "./DronesMapManager";
 import { FODMapManager } from "./FODMapManager";
 import { DateTimeDisplay } from "./DateTimeDisplay";
 import AlertBar from "./AlertBar";
-import { NoKillZone } from "./IsNotInNoKillZone";
 import "./Map.css";
 
-const centerPoint = [78.34910677877723, 17.445657887972082] as [number, number]; // [Longitude, Latitude]
+const centerPoint = [149.1615057, -35.3606176] as [number, number]; // [Longitude, Latitude]
 const center = fromLonLat(centerPoint);
 const noKillZones = [
   { latitude: 17.45, longitude: 78.34, radius: 100 }, // Radius in Meters
@@ -103,7 +102,7 @@ export default function Simple({
         <FODMapManager />
       </RMap>
       <AlertBar
-        graticule={graticule}
+        // graticule={graticule}
         toggleGraticule={toggleGraticule}
         toggleTheme={toggleTheme}
       />

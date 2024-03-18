@@ -1,14 +1,7 @@
 /**
  * Helper function to check if drone is outside no kill zone
  */
-export interface NoKillZone {
-  /**
-   * Struct defining No Kill Zone structure
-   */
-  latitude: number;
-  longitude: number;
-  radius: number;
-}
+import { NoKillZone } from "../types/payloads";
 
 function haversineDistance(
   lat1: number,

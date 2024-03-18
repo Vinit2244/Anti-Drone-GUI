@@ -30,12 +30,12 @@ export interface BatteryState {
 
 // Port number struct
 export interface PortNumber {
-  port_number: number;  // Integer
+  port_number: number; // Integer
 }
 
 // Ground Radar Strength struct
 export interface GroundRadarStrength {
-  strength: number;     // Float in percentage
+  strength: number; // Float in percentage
 }
 
 // Ammunition struct
@@ -95,4 +95,11 @@ export interface CommLink {
   auto_connect: boolean;
   comm_link_type: SerialCommLink | TcpCommLink | UdpCommLink;
   name: string;
+}
+
+export interface NoKillZone {
+  name: string;
+  latitude: number;
+  longitude: number;
+  radius: number;
 }

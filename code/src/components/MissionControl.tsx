@@ -112,7 +112,7 @@ function LooperButton({
     <Button variant="contained" onClick={() => setActive(false)}>
       {cancelChildren}
     </Button>
-  ) : (
+  ) : ( 
     <Button variant="outlined" onClick={() => setActive(true)}>
       {children}
     </Button>

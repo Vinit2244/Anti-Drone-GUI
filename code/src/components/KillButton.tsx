@@ -4,7 +4,7 @@
 import { IsEnemyDrone } from "./IsEnemyDrone";
 import Button from "@mui/material/Button";
 import { isNotInNoKillZone } from "./IsNotInNoKillZone";
-import { NoKillZone } from "./IsNotInNoKillZone";
+import { NoKillZone } from "../types/payloads";
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api";
 

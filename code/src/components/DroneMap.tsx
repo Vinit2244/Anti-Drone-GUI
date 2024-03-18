@@ -15,7 +15,7 @@ import {
   RStyle,
   ROverlay,
   RMap,
-  RPopup
+  RPopup,
 } from "rlayers";
 import { RFill } from "rlayers/style";
 import droneIcon from "../assets/mapDrone.svg";
@@ -29,8 +29,9 @@ import { useSelector } from "@xstate/react";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import droneBoxIcon from "../assets/droneBox.svg";
-import { NoKillZone } from "./IsNotInNoKillZone";
+import { NoKillZone } from "../types/payloads";
 import { toLonLat } from "ol/proj";
+import { IsEnemyDrone } from "./IsEnemyDrone";
 
 function magnitude(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
@@ -129,6 +130,8 @@ export function DroneMap({
       state.matches("Drone Selected") && state.context.selectedID === id
   );
 
+  let shouldZoom = false;
+
   const [trailPoints, setTrailPoints] = useState<
     { lonLat: [number, number]; timestamp: number; color: string }[]
   >([]);
@@ -142,8 +145,8 @@ export function DroneMap({
       const newAlt = info.relative_alt / 1000;
 
       if (mapRef.current) {
-        mapRef.current.ol.getView().setCenter(fromLonLat(initialLonLat));   // Replace this with the current position of friendly drone (Always keep the friendly drone at center)
-        mapRef.current.ol.getView().setZoom(calcZoom(mapRef, [lon, lat]));  // Update zoom only when the rogue drone is selected
+        mapRef.current.ol.getView().setCenter(fromLonLat(initialLonLat)); // Replace this with the current position of friendly drone (Always keep the friendly drone at center)
+        mapRef.current.ol.getView().setZoom(calcZoom(mapRef, [lon, lat])); // Update zoom only when the rogue drone is selected
       }
 
       if (lonLat[0] !== lon || lonLat[1] !== lat) setLonLat([lon, lat]);
@@ -196,8 +199,13 @@ export function DroneMap({
   const deselectedStyle = useRStyle();
   const popupRef = useRef<RPopup>(null);
   useEffect(() => {
-    if (isSelected) popupRef.current?.show();
-    else popupRef.current?.hide();
+    if (isSelected) {
+      shouldZoom = true;
+      popupRef.current?.show();
+    } else {
+      shouldZoom = false;
+      popupRef.current?.hide();
+    }
   }, [isSelected]);
   return (
     <>
@@ -222,8 +230,9 @@ export function DroneMap({
           <RStyle.RIcon
             src={droneBoxIcon}
             anchor={[0.5, 0.8]}
-            width={30}
-            height={30}
+            scale={0.04}
+            // width={30}
+            // height={30}
           />
         </RStyle.RStyle>
         <RFeature geometry={new Point(fromLonLat(initialLonLat))}></RFeature>
