@@ -15,6 +15,7 @@ import { CommLinks } from "./CommLinks";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { RFDSettings } from "./RFDSettings";
 import { FODSettings } from "./FODSettings";
+import { NoKillZones } from "./NoKillZones";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -98,6 +99,7 @@ export function SettingsModalContent({ close }: { close: () => void }) {
             <Tab label="Connection" {...a11yProps(0)} />
             <Tab label="RFD" {...a11yProps(1)} />
             <Tab label="FOD" {...a11yProps(1)} />
+            <Tab label="No Kill Zones" {...a11yProps(1)} />
           </Tabs>
           <TabPanel value={value} index={0}>
             <Accordion defaultExpanded sx={{ width: "100%" }}>
@@ -114,6 +116,9 @@ export function SettingsModalContent({ close }: { close: () => void }) {
           </TabPanel>
           <TabPanel value={value} index={2}>
             <FODSettings />
+          </TabPanel>
+          <TabPanel value={value} index={3}>
+            <NoKillZones updating={updating} setUpdating={setUpdating} />
           </TabPanel>
         </Box>
       </CardContent>
