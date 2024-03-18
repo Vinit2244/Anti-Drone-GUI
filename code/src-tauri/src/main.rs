@@ -26,6 +26,36 @@ mod settings;
 pub mod usb_serial;
 
 #[derive(Clone, serde::Serialize)]
+struct PortNumber {
+    port_number: i32, // Integer
+}
+
+#[derive(Clone, serde::Serialize)]
+struct DronePortPayload {
+    payload: PortNumber,
+}
+
+#[derive(Clone, serde::Serialize)]
+struct GroundRadarStrength {
+    strength: f64, // Float in percentage
+}
+
+#[derive(Clone, serde::Serialize)]
+struct DroneGroundRadarStrengthPayload {
+    payload: GroundRadarStrength,
+}
+
+#[derive(Clone, serde::Serialize)]
+struct Ammunition {
+    ammunition_remaining: i32,
+}
+
+#[derive(Clone, serde::Serialize)]
+struct DroneAmmunitionPayload {
+    payload: Ammunition,
+}
+
+#[derive(Clone, serde::Serialize)]
 struct BatteryUpdatePayload {
     payload: mavlink::ardupilotmega::BATTERY_STATUS_DATA,
 }
@@ -238,6 +268,27 @@ fn init_anti_drone_connection(
             while *keep_alive.read().unwrap() {
                 match vehicle.recv() {
                     Ok((header, msg)) => match msg {
+                        // MavMessage::DRONE_PORT_INT(data) => {
+                        //     let system_id = header.system_id.to_string();
+                        //     let payload = DronePortPayload {
+                        //         payload: data.clone(),
+                        //     };
+                        //     app.emit_all(&format!("port_update_{system_id}"), payload).unwrap();
+                        // }
+                        // MavMessage::GROUND_RADAR_STRENGTH(data) => {
+                        //     let system_id = header.system_id.to_string();
+                        //     let payload = GroundRadarStrengthPayload {
+                        //         payload: data.clone(),
+                        //     };
+                        //     app.emit_all(&format!("radar_strength_update_{system_id}"), payload).unwrap();
+                        // }
+                        // MavMessage::AMMUNITION(data) => {
+                        //     let system_id = header.system_id.to_string();
+                        //     let payload = AmmunitionPayload {
+                        //         payload: data.clone(),
+                        //     };
+                        //     app.emit_all(&format!("ammunition_update_{system_id}"), payload).unwrap();
+                        // }
                         MavMessage::BATTERY_STATUS(data) => {
                             // println!("{data:?}");
                             app.emit_all(
