@@ -1,9 +1,5 @@
-/**
- * Component for single drone
- */
-
 import { LineString, Point } from "ol/geom";
-import { fromLonLat } from "ol/proj";
+import { fromLonLat, getPointResolution } from "ol/proj";
 import {
   useState,
   RefObject,
@@ -19,12 +15,10 @@ import {
   RStyle,
   ROverlay,
   RMap,
-  RPopup,
-  RLayerCluster,
+  RPopup
 } from "rlayers";
 import { RFill } from "rlayers/style";
 import droneIcon from "../assets/mapDrone.svg";
-import rougeDroneIcon from "../assets/rogue_drone.svg";
 import selectedDroneIcon from "../assets/targetedDrone.svg";
 import { useRStyle } from "rlayers/style";
 import { listen } from "@tauri-apps/api/event";
@@ -34,13 +28,43 @@ import { MapControlContext } from "../contexts/MapControlContext";
 import { useSelector } from "@xstate/react";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { IsEnemyDrone } from "./IsEnemyDrone";
 import droneBoxIcon from "../assets/droneBox.svg";
 import { NoKillZone } from "./IsNotInNoKillZone";
-import { KillButton } from "./KillButton";
+import { toLonLat } from "ol/proj";
 
 function magnitude(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
+}
+
+function calcZoom(mapRef: RefObject<RMap>, droneLonLat1: [number, number]) {
+  if (mapRef.current === null) return 0;
+  const view = mapRef.current.ol.getView();
+  let lon1: number = (droneLonLat1[0] * Math.PI) / 180;
+  let lon2: number =
+    (toLonLat(view.getCenter() as [number, number])[0] * Math.PI) / 180;
+  let lat1: number = (droneLonLat1[1] * Math.PI) / 180;
+  let lat2: number =
+    (toLonLat(view.getCenter() as [number, number])[1] * Math.PI) / 180;
+
+  let dlon = lon2 - lon1;
+  let dlat = lat2 - lat1;
+  let a =
+    Math.pow(Math.sin(dlat / 2), 2) +
+    Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2);
+
+  let c = 2 * Math.asin(Math.sqrt(a));
+  let r = 6371;
+  const distance = c * r; // In km
+
+  const resolution = getPointResolution(
+    "EPSG:3857",
+    7.5 * distance,
+    view.getCenter() as [number, number]
+  );
+  const Zoom = Math.log2(156543.03392 / resolution);
+  console.log(Zoom);
+  if (Zoom > 20) return 20;
+  return Zoom;
 }
 
 function distance(
@@ -55,8 +79,7 @@ const MIN_PATH_TRAIL_DISTANCE: number = 10;
 const TEN_MINUTES_IN_MS = 1 * 60 * 1000; // For now set to 1 minute, change when required
 
 function getColorBasedOnAltitude(altitude: number): string {
-  // You can modify this logic based on your requirements
-  const MAX_ALTITUDE = 200; // You can adjust this value based on your altitude range
+  const MAX_ALTITUDE = 200;
 
   // Normalize altitude to a value between 0 and 1
   const normalizedAltitude = altitude / MAX_ALTITUDE;
@@ -85,9 +108,6 @@ export function DroneMap({
   mapRef: RefObject<RMap>;
   noKillZones: NoKillZone[];
 }) {
-  /**
-   * Component for single drone
-   */
   const [lonLat, setLonLat] = useState(initialLonLat);
   const [velocity, setVelocity] = useState(initialVelocity);
   const [velocityZ, setVelocityZ] = useState(initialVz);
@@ -122,7 +142,8 @@ export function DroneMap({
       const newAlt = info.relative_alt / 1000;
 
       if (mapRef.current) {
-        mapRef.current.ol.getView().setCenter(fromLonLat([lon, lat]));
+        mapRef.current.ol.getView().setCenter(fromLonLat(initialLonLat));   // Replace this with the current position of friendly drone (Always keep the friendly drone at center)
+        mapRef.current.ol.getView().setZoom(calcZoom(mapRef, [lon, lat]));  // Update zoom only when the rogue drone is selected
       }
 
       if (lonLat[0] !== lon || lonLat[1] !== lat) setLonLat([lon, lat]);
@@ -169,13 +190,11 @@ export function DroneMap({
     };
   }, []);
 
-  // const droneIconSource = parseInt(id) % 2 === 1 ? droneIcon : rougeDroneIcon;
   const color_of_drone = useMemo(() => selectColor(+id, false), [id]);
   const point = useMemo(() => new Point(fromLonLat(lonLat)), [lonLat]);
   const selectedStyle = useRStyle();
   const deselectedStyle = useRStyle();
   const popupRef = useRef<RPopup>(null);
-  // console.log("DroneMap: ", +id, color_of_drone);
   useEffect(() => {
     if (isSelected) popupRef.current?.show();
     else popupRef.current?.hide();
