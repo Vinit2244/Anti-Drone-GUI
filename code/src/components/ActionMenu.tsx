@@ -1,3 +1,6 @@
+/**
+ * Component of side action bar with drone status
+ */
 import Paper from "@mui/material/Paper";
 import TelemetryConnectionStatus from "./TelemetryConnectionStatus";
 import { OnlyConnected, ShowTakeoff } from "./Only";
@@ -8,6 +11,9 @@ import { Box } from "@mui/material";
 import { DronesStatusSkeleton } from "./DronesStatusSkeleton";
 
 function ActionMenu() {
+  /**
+   * Component of side action bar with drone status
+   */
   return (
     <>
       <Paper className="actionMenu">
@@ -38,8 +44,7 @@ function ActionMenu() {
             // borderTop: "solid",
             // borderTopWidth: "3px",
             // borderTopColor: "grey",
-          }}
-        >
+          }}>
           <TelemetryConnectionStatus />
           <OnlyConnected>
             <ShowTakeoff not>
@@ -59,8 +64,7 @@ function ActionMenu() {
             borderTop: "solid",
             // borderTopColor: "grey",
             overflow: "scroll",
-          }}
-        >
+          }}>
           {/* Template to be shown when some drone is connected */}
           <OnlyConnected>
             <DronesStatus />

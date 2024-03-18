@@ -1,3 +1,7 @@
+/*
+ *  Component displaying friendly drone's status on sidebar
+ */
+
 import { useContext, useEffect, useState } from "react";
 import { emit, listen } from "@tauri-apps/api/event";
 import Stack from "@mui/material/Stack";
@@ -13,6 +17,9 @@ import { invoke } from "@tauri-apps/api";
 import Box from "@mui/material/Box";
 
 export function DronesStatus() {
+  /**
+   *  Component displaying friendly drone's status on sidebar
+   */
   const [droneIDs, setDroneIDs] = useState([] as string[]);
 
   useEffect(() => {
@@ -35,7 +42,16 @@ export function DronesStatus() {
     (state) => !state.matches("Connected.Initial")
   );
 
-  const friendlyDroneIDs = droneIDs.filter((id) => !IsEnemyDrone(+id));
+  /*
+   * Get list of friendly drones
+   */
+  const friendlyDroneIDs = droneIDs.filter(
+    (id) => !IsEnemyDrone(+id) && +id != 255
+  );
+
+  // const friendlyDroneIDs = droneIDs.filter(
+  //   (id) => !IsEnemyDrone(+id)
+  // );
 
   return (
     <Box width="100%" height="100%">

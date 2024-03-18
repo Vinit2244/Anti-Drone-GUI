@@ -1,3 +1,7 @@
+/**
+ * Component for single drone
+ */
+
 import { LineString, Point } from "ol/geom";
 import { fromLonLat } from "ol/proj";
 import {
@@ -30,9 +34,10 @@ import { MapControlContext } from "../contexts/MapControlContext";
 import { useSelector } from "@xstate/react";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import { IsEnemyDrone } from "./IsEnemyDrone";
 import droneBoxIcon from "../assets/droneBox.svg";
+import { NoKillZone } from "./IsNotInNoKillZone";
+import { KillButton } from "./KillButton";
 
 function magnitude(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
@@ -70,6 +75,7 @@ export function DroneMap({
   initialVz,
   initialAltitude,
   mapRef,
+  noKillZones,
 }: {
   id: string;
   initialLonLat: [number, number];
@@ -77,7 +83,11 @@ export function DroneMap({
   initialVz: number;
   initialAltitude: number;
   mapRef: RefObject<RMap>;
+  noKillZones: NoKillZone[];
 }) {
+  /**
+   * Component for single drone
+   */
   const [lonLat, setLonLat] = useState(initialLonLat);
   const [velocity, setVelocity] = useState(initialVelocity);
   const [velocityZ, setVelocityZ] = useState(initialVz);
@@ -165,7 +175,7 @@ export function DroneMap({
   const selectedStyle = useRStyle();
   const deselectedStyle = useRStyle();
   const popupRef = useRef<RPopup>(null);
-  console.log("DroneMap: ", +id, color_of_drone);
+  // console.log("DroneMap: ", +id, color_of_drone);
   useEffect(() => {
     if (isSelected) popupRef.current?.show();
     else popupRef.current?.hide();
