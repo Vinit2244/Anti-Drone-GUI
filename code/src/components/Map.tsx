@@ -3,7 +3,7 @@ import { Paper } from "@mui/material";
 import "ol/ol.css";
 import { RMap, RLayerTileWebGL, RLayerVector, RLayerGraticule, RControl, RStyle, RFeature } from "rlayers";
 import { RView } from "rlayers/RMap";
-import { fromLonLat } from "ol/proj";
+import { fromLonLat, getPointResolution } from "ol/proj";
 import Point from "ol/geom/Point";
 import { OnlyConnected } from "./Only";
 import { DronesMapManager } from "./DronesMapManager";
@@ -12,10 +12,10 @@ import { DateTimeDisplay } from "./DateTimeDisplay";
 import AlertBar from "./AlertBar";
 import "./Map.css";
 
-const centerPoint = [78.34910677877723, 17.445657887972082] as [number, number];
+const centerPoint = [78.34910677877723, 17.445657887972082] as [number, number];  // [Longitude, Latitude]
 const center = fromLonLat(centerPoint);
 const noKillZones = [
-  { latitude: 17.45, longitude: 78.34, radius: 100 },
+  { latitude: 17.45, longitude: 78.34, radius: 100 }, // Radius in Meters
   { latitude: 17.46, longitude: 78.35, radius: 500 },
   // Add more no-kill zones as needed
 ];
@@ -24,7 +24,10 @@ export default function Simple({ toggleTheme }: { toggleTheme: () => void }): JS
   const [graticule, setGraticule] = useState<boolean>(true);
   const style = RStyle.useRStyle();
   const mapRef = useRef<RMap>(null);
-  const [view, setView] = React.useState<RView>({ center: center, zoom: 11 });
+  // Here in calculating resolution, 1 depicts 1km width, so that the map shown on the screen will be showing 1km width
+  const resolution = getPointResolution("EPSG:3857", 1, center);
+  const initialZoom = Math.round(Math.log2(156543.03392 / resolution));
+  const [view, setView] = React.useState<RView>({ center: center, zoom: initialZoom });
 
   const toggleGraticule = useCallback(() => {
     setGraticule((prevGraticule) => !prevGraticule);
@@ -52,7 +55,8 @@ export default function Simple({ toggleTheme }: { toggleTheme: () => void }): JS
             <RFeature key={index} geometry={new Point(fromLonLat([zone.longitude, zone.latitude]))}>
               <RStyle.RStyle>
                 <RStyle.RCircle radius={calculateCircleRadius(zone.radius, view.resolution)}>
-                  <RStyle.RFill color="red" />
+                  <RStyle.RStroke color="#8B0000" width={2} />
+                  <RStyle.RFill color="rgba(255, 153, 153, 0.5)" />
                 </RStyle.RCircle>
               </RStyle.RStyle>
             </RFeature>
