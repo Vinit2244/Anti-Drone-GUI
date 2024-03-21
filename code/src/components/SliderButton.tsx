@@ -1,5 +1,5 @@
 import { Slider, Typography } from "@mui/material";
-import { RefObject, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export default function SliderButton({
   railText,

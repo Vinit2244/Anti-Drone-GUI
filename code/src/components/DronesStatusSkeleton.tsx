@@ -25,7 +25,7 @@ export function DronesStatusSkeleton() {
       <Stack
         gap={2}
         width="100%"
-        maxHeight="50vh"
+        // maxHeight="50vh"
         overflow="scroll"
         paddingBottom="5px"
       >

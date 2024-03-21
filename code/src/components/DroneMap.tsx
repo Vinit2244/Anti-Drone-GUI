@@ -240,6 +240,25 @@ export function DroneMap({
       <RStyle.RStyle ref={velocityLineStyle}>
         <RStyle.RStroke color="black" width={2} />
       </RStyle.RStyle>
+      <RLayerVector zIndex={10}>
+        <RFeature geometry={new Point(fromLonLat(initialLonLat))}>
+          <ROverlay className="no-interaction">
+            <img
+              src={droneBoxIcon}
+              style={{
+                position: "relative",
+                top: -24,
+                left: -24,
+                userSelect: "none",
+                pointerEvents: "none",
+              }}
+              width={48}
+              height={48}
+              alt="animated icon"
+            />
+          </ROverlay>
+        </RFeature>
+      </RLayerVector>
       <RLayerVector
         style={isSelected ? selectedStyle : deselectedStyle}
         /* @ts-ignore */

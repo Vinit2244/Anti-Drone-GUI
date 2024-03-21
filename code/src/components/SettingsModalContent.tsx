@@ -16,6 +16,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { RFDSettings } from "./RFDSettings";
 import { FODSettings } from "./FODSettings";
 import { NoKillZones } from "./NoKillZones";
+import MapSizeSettings from "./MapSizeSettings"
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -51,7 +52,7 @@ function a11yProps(index: number) {
   };
 }
 
-export function SettingsModalContent({ close }: { close: () => void }) {
+export function SettingsModalContent({ close, toggleFullScreenMap }: { close: () => void; toggleFullScreenMap: () => void }) {
   const [value, setValue] = useState(0);
   const [updating, setUpdating] = useState(false);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -100,6 +101,7 @@ export function SettingsModalContent({ close }: { close: () => void }) {
             <Tab label="RFD" {...a11yProps(1)} />
             <Tab label="FOD" {...a11yProps(1)} />
             <Tab label="No Kill Zones" {...a11yProps(1)} />
+            <Tab label="Map Settings" {...a11yProps(1)} />
           </Tabs>
           <TabPanel value={value} index={0}>
             <Accordion defaultExpanded sx={{ width: "100%" }}>
@@ -119,6 +121,11 @@ export function SettingsModalContent({ close }: { close: () => void }) {
           </TabPanel>
           <TabPanel value={value} index={3}>
             <NoKillZones updating={updating} setUpdating={setUpdating} />
+          </TabPanel>
+          <TabPanel value={value} index={4}>
+            <button onClick={toggleFullScreenMap}>
+                 Change Mode
+            </button>
           </TabPanel>
         </Box>
       </CardContent>

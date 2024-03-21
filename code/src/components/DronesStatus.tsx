@@ -3,17 +3,15 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import { emit, listen } from "@tauri-apps/api/event";
+import { listen } from "@tauri-apps/api/event";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import { DroneStatus } from "./DroneStatus";
+import { EnemyDroneStatus } from "./EnemyDroneStatus"
 import { PhaseContext } from "../contexts/PhaseContext";
 import { useSelector } from "@xstate/react";
-import { DroneStatusSkeleton } from "./DroneStatusSkeleton";
-import { IsEnemyDrone } from "./IsEnemyDrone";
 import IconButton from "@mui/material/IconButton";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import { invoke } from "@tauri-apps/api";
 import Box from "@mui/material/Box";
 
 export function DronesStatus() {
@@ -45,9 +43,10 @@ export function DronesStatus() {
   /*
    * Get list of friendly drones
    */
-  const friendlyDroneIDs = droneIDs.filter(
-    (id) => !IsEnemyDrone(+id) && +id != 255
-  );
+  // const friendlyDroneIDs = droneIDs.filter(
+  //   (id) => !IsEnemyDrone(+id) && +id != 255
+  // );
+  const friendlyDroneIDs = ["1234", "5678"]
 
   // const friendlyDroneIDs = droneIDs.filter(
   //   (id) => !IsEnemyDrone(+id)
@@ -57,7 +56,6 @@ export function DronesStatus() {
     <Box width="100%" height="100%">
       <Stack
         direction="row"
-        // height="20%"
         justifyContent="space-between"
         width="90%"
         margin="auto"
@@ -78,7 +76,6 @@ export function DronesStatus() {
         <IconButton
           onClick={() => {
             setDroneIDs([]);
-            // invoke("set_messages_stream", { systemId: 0 });
           }}>
           <RefreshIcon />
         </IconButton>
@@ -100,26 +97,20 @@ export function DronesStatus() {
         width="100%"
         style={{ height: "calc(100% - 70px)" }}
         overflow="scroll">
-        {friendlyDroneIDs.map((id) => (
-          <Box
-            marginBottom="10px"
-            key={id}
-            display="grid"
-            sx={{ placeItems: "center" }}>
-            <DroneStatus id={id} />
-          </Box>
-        ))}
-        {droneIDs.length < 10
-          ? Array.from({ length: 10 - droneIDs.length }, (e, i) => (
-              <Box
-                marginBottom="10px"
-                key={i.toString() + "dummy"}
-                display="grid"
-                sx={{ placeItems: "center" }}>
-                <DroneStatusSkeleton label="Empty Drone Slot" />
-              </Box>
-            ))
-          : null}
+        <Box
+          marginBottom="10px"
+          key={friendlyDroneIDs[0]}
+          display="grid"
+          sx={{ placeItems: "center" }}>
+          <DroneStatus id={friendlyDroneIDs[0]} />
+        </Box>
+        <Box
+          marginBottom="10px"
+          key={"Enemy Drone"}
+          display="grid"
+          sx={{ placeItems: "center" }}>
+          <EnemyDroneStatus id={"Enemy Drone"} />
+        </Box>
       </Box>
     </Box>
   );

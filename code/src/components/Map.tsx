@@ -9,6 +9,7 @@ import {
   RControl,
   RStyle,
   RFeature,
+  ROverlay,
 } from "rlayers";
 import { RView } from "rlayers/RMap";
 import { fromLonLat, getPointResolution } from "ol/proj";
@@ -19,6 +20,10 @@ import { FODMapManager } from "./FODMapManager";
 import { DateTimeDisplay } from "./DateTimeDisplay";
 import AlertBar from "./AlertBar";
 import "./Map.css";
+import ActionMenu from "./ActionMenu"
+import { FODDataProvider } from "../contexts/FODDataContext";
+import { PhaseProvider } from "../contexts/PhaseContext";
+
 
 const centerPoint = [149.1615057, -35.3606176] as [number, number]; // [Longitude, Latitude]
 const center = fromLonLat(centerPoint);
@@ -29,11 +34,13 @@ const noKillZones = [
 ];
 
 export default function Simple({
-  toggleTheme,
+  toggleTheme, cName, toggleFullScreenMap 
 }: {
   toggleTheme: () => void;
-}): JSX.Element {
+  cName: string;
+  toggleFullScreenMap: () => void}): JSX.Element {
   const [graticule, setGraticule] = useState<boolean>(true);
+  const [otherComponentClass, setOtherComponentClass] = React.useState("");
   const style = RStyle.useRStyle();
   const mapRef = useRef<RMap>(null);
   // Here in calculating resolution, 1 depicts 1km width, so that the map shown on the screen will be showing 1km width
@@ -53,7 +60,9 @@ export default function Simple({
   };
 
   return (
-    <Paper className="mapWrapper" style={{ position: "relative" }}>
+   
+    <Paper className={cName} style={{ position: "relative" }}>
+ 
       <RStyle.RStyle ref={style}>
         <RStyle.RStroke
           color={graticule ? "black" : "transparent"}
@@ -66,7 +75,7 @@ export default function Simple({
         initial={view}
         view={[view, setView]}
         ref={mapRef}
-        onClick={useCallback(() => {}, [])}>
+        onClick={useCallback(() => { }, [])}>
         <RLayerTileWebGL url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" />
         <RLayerVector zIndex={10}>
           {noKillZones.map((zone, index) => (
@@ -86,7 +95,6 @@ export default function Simple({
             </RFeature>
           ))}
         </RLayerVector>
-
         <RLayerGraticule visible={graticule} strokeStyle={style} />
         <RControl.RScaleLine />
         <RControl.RZoomSlider />
@@ -101,10 +109,11 @@ export default function Simple({
         </OnlyConnected>
         <FODMapManager />
       </RMap>
+      
       <AlertBar
-        // graticule={graticule}
         toggleGraticule={toggleGraticule}
         toggleTheme={toggleTheme}
+        toggleFullScreenMap = {toggleFullScreenMap}
       />
     </Paper>
   );

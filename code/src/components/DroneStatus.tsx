@@ -138,13 +138,6 @@ export function DroneStatus({ id }: { id: string }) {
   const enableSelect = useSelector(phaseServices.phaseService, (state) =>
     state.matches("Connected.Initial")
   );
-  // useEffect(() => {
-  //   if (enableSelect && isSelected && !connected)
-  //     send({
-  //       type: "Remove Selected Drones",
-  //       removeDrone: +id,
-  //     });
-  // }, [isSelected, connected, enableSelect]);
 
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   return (
@@ -182,7 +175,7 @@ export function DroneStatus({ id }: { id: string }) {
       <Chip
         sx={{ height: "130px", width: "90%", margin: "auto" }}
         color={"success"}
-        disabled={!connected}
+        // disabled={!connected}
         variant="outlined"
         label={
           <Stack>
@@ -306,16 +299,6 @@ export function DroneStatus({ id }: { id: string }) {
                 }}
                 color="success"
               />
-            </Stack>
-            <Stack
-              direction="row"
-              gap={1}
-              alignItems="center"
-              justifyContent="space-evenly"
-            >
-              <DronePortIndicator id={id}/>
-              <DroneGroundRadarStrengthIndicator id={id}/>
-              <DroneAmmunitionIndicator id={id}/>
             </Stack>
           </Stack>
         }

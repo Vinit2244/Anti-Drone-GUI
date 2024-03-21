@@ -13,6 +13,7 @@ import { PhaseProvider } from "./contexts/PhaseContext";
 import { MissionControl } from "./components/MissionControl";
 import { MapControlProvider } from "./contexts/MapControlContext";
 import { FODDataProvider } from "./contexts/FODDataContext";
+import VideoFeedButton from "./components/VideoFeed";
 
 const darkTheme = createTheme({
   palette: {
@@ -28,9 +29,16 @@ const lightTheme = createTheme({
 
 function App() {
   const [currentTheme, setCurrentTheme] = useState(darkTheme);
+  const [fullScreenMap, setFullScreenMap] = useState(false);
 
   const toggleTheme = () => {
-    setCurrentTheme((prevTheme) => (prevTheme === darkTheme ? lightTheme : darkTheme));
+    setCurrentTheme((prevTheme) =>
+      prevTheme === darkTheme ? lightTheme : darkTheme
+    );
+  };
+
+  const toggleFullScreenMap = () => {
+    setFullScreenMap(!fullScreenMap);
   };
 
   return (
@@ -41,9 +49,18 @@ function App() {
           <MapControlProvider>
             <FODDataProvider>
               <div className="appContainer">
-                <Map toggleTheme={toggleTheme} />
-                <ActionMenu />
-                <MissionControl />
+                {fullScreenMap ? (
+                  <Map  toggleTheme={toggleTheme} cName="mapWrapper-full" toggleFullScreenMap = {toggleFullScreenMap}/>
+                ) : (
+                  <Map  toggleTheme={toggleTheme} cName="mapWrapper-left" toggleFullScreenMap = {toggleFullScreenMap}/>
+                )}
+                {!fullScreenMap && <ActionMenu cName="actionMenu-right" />}
+                {!fullScreenMap && <MissionControl cName="missionControl-right" />}
+                {fullScreenMap ? (
+                  <VideoFeedButton cName="videoFeedButton-right"/>
+                ) : (
+                  <VideoFeedButton cName="videoFeedButton-left"/>
+                )}
               </div>
             </FODDataProvider>
           </MapControlProvider>

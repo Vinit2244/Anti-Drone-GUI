@@ -12,18 +12,22 @@
   grid-row: 1; /* Occupies the first row */
 }
 
-.mapWrapper {
+.mapWrapper-left {
   grid-column: 1; /* Starts from the first column */
   grid-row: 2 / 4; /* Occupies the second row */
 }
 
-.actionMenu {
-  grid-column: 2; /* Starts from the second column */
-  grid-row: 2 ; /* Occupies the first row */
-
+.mapWrapper-full {
+  grid-column: 1 / 3; /* Starts from the first column */
+  grid-row: 2 / 4; /* Occupies the second row */
 }
 
-.missionControl {
+.actionMenu-right {
+  grid-column: 2; /* Starts from the second column */
+  grid-row: 2 ; /* Occupies the first row */
+}
+
+.missionControl-right {
   grid-column: 2; /* Starts from the second column */
   grid-row: 3; /* Occupies the second row */
 }
@@ -33,3 +37,29 @@
   grid-row: 1 / 3; /* Spans across both rows */
 }
 
+.videoFeedButton-left {
+  position: absolute;
+  top: 83%;
+  left: 49%; /* Adjust this value according to your layout */
+  transform: translateY(-50%);
+  z-index: 1000; /* Ensure it appears above other elements */
+  cursor: "pointer";
+  border-radius: 50%;
+  border: "none";
+  background: "none";
+  padding: 0;
+}
+
+.videoFeedButton-right {
+  position: absolute;
+  top: 83%;
+  left: 83%;
+  /* Adjust this value according to your layout */
+  transform: translateY(-50%);
+  z-index: 1000; /* Ensure it appears above other elements */
+  cursor: "pointer";
+  border-radius: 50%;
+  border: "none";
+  background: "none";
+  padding: 0;
+}

@@ -97,6 +97,7 @@ function LooperButton({
 }>) {
   const [active, setActive] = useState(false);
   const [ticker, setTicker] = useState(false);
+  const [otherComponentClass, setOtherComponentClass] = useState("");
   useEffect(() => {
     if (!active) return;
     (async () => {
@@ -119,7 +120,7 @@ function LooperButton({
   );
 }
 
-export function MissionControl() {
+export function MissionControl({cName} : {cName: string}) {
   const phaseServices = useContext(PhaseContext);
   const { send } = phaseServices.phaseService;
   const { fodDataService } = useContext(FODDataContext);
@@ -131,10 +132,9 @@ export function MissionControl() {
   return (
     <>
       <Paper
-        className="missionControl"
+        className={cName}
         style={{
           borderTop: "solid",
-          // color: "grey",
           overflow: "scroll",
         }}
       >
@@ -159,6 +159,112 @@ export function MissionControl() {
             gap: 7,
           }}
         >
+          {/* 8 Looper button templates */}
+          <LooperButton
+            delay={0}
+            cancelChildren={"Stop Button 1"}
+            onPress={async () => {
+              try {
+                return true;
+              } catch (e) {
+                console.error(e);
+                return false;
+              }
+            }}
+          >
+            Button 1
+          </LooperButton>
+
+          <LooperButton
+            delay={0}
+            cancelChildren={"Stop Button 2"}
+            onPress={async () => {
+              try {
+                return true;
+              } catch (e) {
+                console.error(e);
+                return false;
+              }
+            }}
+          >
+            Button 2
+          </LooperButton>
+
+          <LooperButton
+            delay={0}
+            cancelChildren={"Stop Button 3"}
+            onPress={async () => {
+              try {
+                return true;
+              } catch (e) {
+                console.error(e);
+                return false;
+              }
+            }}
+          >
+            Button 3
+          </LooperButton>
+
+          <LooperButton
+            delay={0}
+            cancelChildren={"Stop Button 4"}
+            onPress={async () => {
+              try {
+                return true;
+              } catch (e) {
+                console.error(e);
+                return false;
+              }
+            }}
+          >
+            Button 4
+          </LooperButton>
+
+          <LooperButton
+            delay={0}
+            cancelChildren={"Stop Button 5"}
+            onPress={async () => {
+              try {
+                return true;
+              } catch (e) {
+                console.error(e);
+                return false;
+              }
+            }}
+          >
+            Button 5
+          </LooperButton>
+
+          <LooperButton
+            delay={0}
+            cancelChildren={"Stop Button 6"}
+            onPress={async () => {
+              try {
+                return true;
+              } catch (e) {
+                console.error(e);
+                return false;
+              }
+            }}
+          >
+            Button 6
+          </LooperButton>
+
+          <LooperButton
+            delay={0}
+            cancelChildren={"Stop Button 7"}
+            onPress={async () => {
+              try {
+                return true;
+              } catch (e) {
+                console.error(e);
+                return false;
+              }
+            }}
+          >
+            Button 7
+          </LooperButton>
+
           {/* <ShowTakeoff>
             <TakeoffButton />
           </ShowTakeoff>
@@ -171,7 +277,7 @@ export function MissionControl() {
           <ShowEmergencyClear>
             <EmergencyClearButton />
           </ShowEmergencyClear> */}
-          <LooperButton
+          {/* <LooperButton
             delay={200}
             cancelChildren={"Stop Sending Launch"}
             onPress={async () => {
@@ -186,8 +292,8 @@ export function MissionControl() {
             }}
           >
             Send Launch
-          </LooperButton>
-          <LooperButton
+          </LooperButton> */}
+          {/* <LooperButton
             delay={200}
             cancelChildren={"Stop Sending Land"}
             onPress={async () => {
@@ -201,7 +307,7 @@ export function MissionControl() {
             }}
           >
             Send Land
-          </LooperButton>
+          </LooperButton> */}
           {/* <Button
             variant="outlined"
             onClick={() => {
@@ -222,7 +328,7 @@ export function MissionControl() {
             Test Add new FOD
           </Button> */}
 
-          <LooperButton
+          {/* <LooperButton
             delay={0}
             cancelChildren={"Stop Setting Guided"}
             onPress={async () => {
@@ -246,8 +352,8 @@ export function MissionControl() {
             }}
           >
             Set Guided
-          </LooperButton>
-          <LooperButton
+          </LooperButton> */}
+          {/* <LooperButton
             delay={0}
             cancelChildren={"Stop Setting PosHold"}
             onPress={async () => {
@@ -271,7 +377,7 @@ export function MissionControl() {
             }}
           >
             Set PosHold
-          </LooperButton>
+          </LooperButton> */}
           {/* <LooperButton
             delay={0}
             cancelChildren={"Stop Setting AltHold"}
@@ -322,14 +428,14 @@ export function MissionControl() {
           >
             RTH
           </LooperButton>
-          <Button
+          {/* <Button
             variant="outlined"
             onClick={() => {
               invoke("kill_motors");
             }}
           >
             Kill Motors
-          </Button>
+          </Button> */}
           {/* <Button
             variant="outlined"
             onClick={() => {
@@ -338,7 +444,7 @@ export function MissionControl() {
           >
             Complete takeoff
           </Button> */}
-          <Button
+          {/* <Button
             disabled={false}
             variant="outlined"
             onClick={() => {
@@ -347,7 +453,7 @@ export function MissionControl() {
             }}
           >
             Complete Mission
-          </Button>
+          </Button> */}
         </div>
       </Paper>
     </>
