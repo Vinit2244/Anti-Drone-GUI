@@ -1,8 +1,6 @@
 import Paper from "@mui/material/Paper";
 import { OnlyConnected } from "./Only";
 import { DronesStatus } from "./DronesStatus";
-import MapSizeSettings from "./MapSizeSettings";
-import React from "react";
 
 function ActionMenu({cName} : {cName: string}) {
   return (

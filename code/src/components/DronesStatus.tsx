@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import { DroneStatus } from "./DroneStatus";
 import { EnemyDroneStatus } from "./EnemyDroneStatus"
 import { VitalStatus } from "./VitalStatus"
+import { AmmunitionStatus } from "./AmmunitionStatus"
 import { PhaseContext } from "../contexts/PhaseContext";
 import { useSelector } from "@xstate/react";
 import IconButton from "@mui/material/IconButton";
@@ -113,6 +114,12 @@ export function DronesStatus() {
           key={"Vital Status"}
           display="grid">
           <VitalStatus id={"Vital Status"} />
+        </Box>
+        <Box
+          marginBottom="3%"
+          key={"Ammunition Status"}
+          display="grid">
+          <AmmunitionStatus id={"Ammunition Status"} />
         </Box>
       </Box>
     </Box>

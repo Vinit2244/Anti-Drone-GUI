@@ -23,9 +23,6 @@ import DroneGPSStatus from "./DroneGPSStatus";
 import { HeartbeatPayload, LandedStatePayload } from "../types/payloads";
 import { FLIGHT_MODES } from "../constants/flight_modes";
 import { invoke } from "@tauri-apps/api";
-import DronePortIndicator from "./DronePortIndicator";
-import DroneGroundRadarStrengthIndicator from "./DroneGroundRadarStrengthIndicator"
-import DroneAmmunitionIndicator from "./DroneAmmunitionIndicator"
 
 export function DroneStatus({ id }: { id: string }) {
   const [connected, setConnected] = useState(true);
