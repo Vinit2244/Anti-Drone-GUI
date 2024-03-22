@@ -16,7 +16,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { RFDSettings } from "./RFDSettings";
 import { FODSettings } from "./FODSettings";
 import { NoKillZones } from "./NoKillZones";
-import MapSizeSettings from "./MapSizeSettings"
+import FitScreenIcon from '@mui/icons-material/FitScreen';
+import Fab from '@mui/material/Fab';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -123,9 +124,15 @@ export function SettingsModalContent({ close, toggleFullScreenMap }: { close: ()
             <NoKillZones updating={updating} setUpdating={setUpdating} />
           </TabPanel>
           <TabPanel value={value} index={4}>
-            <button onClick={toggleFullScreenMap}>
+            <Box sx={{ '& > :not(style)': { m: 1 } }}>
+              <Fab variant="extended" onClick={toggleFullScreenMap} style={{ backgroundColor: "#c0c0c0" }}>
+                <FitScreenIcon sx={{ mr: 1 }} />
+                Change Map Mode
+              </Fab>
+            </Box>
+            {/* <button onClick={toggleFullScreenMap}>
                  Change Mode
-            </button>
+            </button> */}
           </TabPanel>
         </Box>
       </CardContent>
