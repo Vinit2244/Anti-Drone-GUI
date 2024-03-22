@@ -14,6 +14,14 @@ function GroundRadarStrengthDetecting() {
       variant="outlined"
       color="warning"
       label="Detecting"
+      style={{
+        display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: 'auto', // Adjust height as per requirement
+        width: "25vh", // Adjust width as per requirement
+        padding: '8px', // Adjust padding as per requirement
+      }}
     />
   );
 }
@@ -25,6 +33,14 @@ function GroundRadarDetected({ radars }: { radars: number }) {
       variant="outlined"
       color="success"
       label={`${radars}%`}
+      style={{
+        display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: 'auto', // Adjust height as per requirement
+        width: "25vh", // Adjust width as per requirement
+        padding: '8px', // Adjust padding as per requirement
+      }}
     />
   );
 }

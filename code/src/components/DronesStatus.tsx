@@ -1,13 +1,10 @@
-/*
- *  Component displaying friendly drone's status on sidebar
- */
-
 import { useContext, useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import { DroneStatus } from "./DroneStatus";
 import { EnemyDroneStatus } from "./EnemyDroneStatus"
+import { VitalStatus } from "./VitalStatus"
 import { PhaseContext } from "../contexts/PhaseContext";
 import { useSelector } from "@xstate/react";
 import IconButton from "@mui/material/IconButton";
@@ -98,18 +95,24 @@ export function DronesStatus() {
         style={{ height: "calc(100% - 70px)" }}
         overflow="scroll">
         <Box
-          marginBottom="10px"
+          marginBottom="3%"
           key={friendlyDroneIDs[0]}
           display="grid"
           sx={{ placeItems: "center" }}>
           <DroneStatus id={friendlyDroneIDs[0]} />
         </Box>
         <Box
-          marginBottom="10px"
+          marginBottom="3%"
           key={"Enemy Drone"}
           display="grid"
           sx={{ placeItems: "center" }}>
           <EnemyDroneStatus id={"Enemy Drone"} />
+        </Box>
+        <Box
+          marginBottom="3%"
+          key={"Vital Status"}
+          display="grid">
+          <VitalStatus id={"Vital Status"} />
         </Box>
       </Box>
     </Box>

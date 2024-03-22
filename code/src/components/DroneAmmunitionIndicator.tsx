@@ -12,6 +12,14 @@ function AmmunitionDetecting() {
         variant="outlined"
         color="warning"
         label="Detecting Ammo"
+        style={{
+          display: 'inline-flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          height: 'auto', // Adjust height as per requirement
+          width: 'fit-content', // Adjust width as per requirement
+          padding: '8px', // Adjust padding as per requirement
+        }}
         />
     );
 }
@@ -23,6 +31,14 @@ function AmmunitionDetected({ ammo }: { ammo: number }) {
         variant="outlined"
         color="success"
         label={`${ammo}`}
+        style={{
+          display: 'inline-flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          height: 'auto', // Adjust height as per requirement
+          width: 'fit-content', // Adjust width as per requirement
+          padding: '8px', // Adjust padding as per requirement
+        }}
       />
     );
   }
