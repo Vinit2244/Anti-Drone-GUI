@@ -1,7 +1,9 @@
 import Typography from "@mui/material/Typography";
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
-import { NoKillZone } from "../types/payloads";
+import {
+  NoKillZone
+} from "../types/payloads";
 import { Box, Card, CardContent, CardHeader, IconButton } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { useImmer } from "use-immer";
@@ -41,7 +43,7 @@ function NoKillZoneCard({
             variant="standard"
             value={updatedNoKillZone.name}
             onChange={(e) => {
-              setUpdatedNoKillZone((draft: NoKillZone) => {
+              setUpdatedNoKillZone((draft) => {
                 draft.name = e.target.value;
               });
             }}
@@ -53,16 +55,15 @@ function NoKillZoneCard({
             onClick={async () => {
               setUpdating(true);
               if (newZone)
-                await invoke("add_no_kill_zone", {
-                  newNoKillZone: updatedNoKillZone,
-                });
+                await invoke("add_no_kill_zone", { newZone: updatedNoKillZone });
               else
                 await invoke("update_no_kill_zone", {
                   index,
-                  newNoKillZone: updatedNoKillZone,
+                  newZone: updatedNoKillZone,
                 });
               setUpdating(false);
-            }}>
+            }}
+          >
             <SaveIcon />
           </IconButton>
         }
@@ -74,13 +75,14 @@ function NoKillZoneCard({
             alignItems: "center",
             justifyContent: "space-between",
             marginTop: "20px",
-          }}>
+          }}
+        >
           <TextField
             type="number"
             label="Latitude"
             value={updatedNoKillZone.latitude}
             onChange={(e) => {
-              setUpdatedNoKillZone((draft: NoKillZone) => {
+              setUpdatedNoKillZone((draft) => {
                 draft.latitude = +e.target.value;
               });
             }}
@@ -90,7 +92,7 @@ function NoKillZoneCard({
             label="Longitude"
             value={updatedNoKillZone.longitude}
             onChange={(e) => {
-              setUpdatedNoKillZone((draft: NoKillZone) => {
+              setUpdatedNoKillZone((draft) => {
                 draft.longitude = +e.target.value;
               });
             }}
@@ -100,7 +102,7 @@ function NoKillZoneCard({
             label="Radius"
             value={updatedNoKillZone.radius}
             onChange={(e) => {
-              setUpdatedNoKillZone((draft: NoKillZone) => {
+              setUpdatedNoKillZone((draft) => {
                 draft.radius = +e.target.value;
               });
             }}
@@ -124,9 +126,7 @@ export function NoKillZones({
   useEffect(() => {
     (async () => {
       try {
-        const newNoKillZones = (await invoke(
-          "get_no_kill_zones"
-        )) as NoKillZone[];
+        const newNoKillZones = (await invoke("get_no_kill_zones")) as NoKillZone[];
         setNoKillZones(newNoKillZones);
       } catch (e) {
         console.error(e);
@@ -159,16 +159,16 @@ export function NoKillZones({
         <IconButton
           onClick={() => {
             setNewNoKillZones((oldNoKillZones) => [
-              ...oldNoKillZones,
-              {
-                id: "new",
+              ...oldNoKillZones,{
+                id:"new",
                 name: "New No Kill Zone",
                 latitude: 0,
                 longitude: 0,
-                radius: 0,
-              },
-            ]);
-          }}>
+                radius: 0}]
+
+            );
+          }}
+        >
           <AddIcon />
         </IconButton>
       </Box>

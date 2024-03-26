@@ -7,6 +7,7 @@ use mavlink::ardupilotmega::{
 };
 use mavlink::error::MessageReadError;
 use mavlink::MavHeader;
+use nokill::NoKillZone;
 
 use settings::CommLink;
 use std::error::Error;
@@ -23,6 +24,7 @@ pub mod foreign_object;
 mod ftp;
 pub mod messages;
 mod settings;
+mod nokill;
 pub mod usb_serial;
 
 #[derive(Clone, serde::Serialize)]
@@ -469,7 +471,10 @@ fn main() {
             fod_watcher::create_mission_session,
             fod_watcher::load_mission_data,
             fod_watcher::end_mission_session,
-            fod_watcher::set_cleared
+            fod_watcher::set_cleared,
+            nokill::get_no_kill_zones,
+            nokill::add_no_kill_zone,
+            nokill::update_no_kill_zone
         ])
         .setup(|app| {
             let app_handle = app.app_handle();

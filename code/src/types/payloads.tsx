@@ -96,10 +96,13 @@ export interface CommLink {
   comm_link_type: SerialCommLink | TcpCommLink | UdpCommLink;
   name: string;
 }
-
 export interface NoKillZone {
-  name: string;
+  id: string;
+  name:string;
   latitude: number;
   longitude: number;
   radius: number;
+  
 }
+
+
