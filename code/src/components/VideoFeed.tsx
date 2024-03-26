@@ -14,6 +14,7 @@ export default function VidoeFeedButton({cName, handleClick} : {cName: string; h
                     width: "200px",
                     height: "200px",
                     objectFit: "cover",
+                    borderRadius: "50%",
                 }}
                 alt="animated icon"
             />

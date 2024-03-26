@@ -10,6 +10,7 @@ import ToggleGridButton from "./ToggleGridButton";
 import TelemetryConnectionStatus from "./TelemetryConnectionStatus";
 import { OnlyConnected, ShowTakeoff } from "./Only";
 import { ProgressStatus } from "./ProgressStatus";
+import SwipeableReadyDrawer from "./SwipeableReadyDrawer"
 
 function AlertBar({ toggleGraticule, toggleTheme, toggleFullScreenMap }: { toggleGraticule: () => void; toggleTheme: () => void; toggleFullScreenMap: () => void }) {
   const [openSettings, setOpenSettings] = useState(false);
@@ -36,7 +37,7 @@ function AlertBar({ toggleGraticule, toggleTheme, toggleFullScreenMap }: { toggl
           <Stack sx={{ marginX: "2%", justifyContent: "space-between" }} spacing={1} direction="row">
             {/* All the things that are to be aligned left in this div */}
             <div>
-
+              <SwipeableReadyDrawer/>
             </div>
             {/* All the things that are to be aligned right in this div */}
             <div>

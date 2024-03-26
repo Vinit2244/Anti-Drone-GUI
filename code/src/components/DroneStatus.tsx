@@ -172,7 +172,7 @@ export function DroneStatus({ id }: { id: string }) {
       <Chip
         sx={{ height: "130px", width: "90%", margin: "auto" }}
         color={"success"}
-        // disabled={!connected}
+        disabled={!connected}
         variant="outlined"
         label={
           <Stack>

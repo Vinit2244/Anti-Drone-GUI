@@ -11,6 +11,7 @@ import { useSelector } from "@xstate/react";
 import IconButton from "@mui/material/IconButton";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import Box from "@mui/material/Box";
+import { IsEnemyDrone } from "./IsEnemyDrone";
 
 export function DronesStatus() {
   /**
@@ -38,13 +39,15 @@ export function DronesStatus() {
     (state) => !state.matches("Connected.Initial")
   );
 
+  // Hard coded drones
+  // const friendlyDroneIDs = ["1234", "5678"]
+
   /*
    * Get list of friendly drones
    */
-  // const friendlyDroneIDs = droneIDs.filter(
-  //   (id) => !IsEnemyDrone(+id) && +id != 255
-  // );
-  const friendlyDroneIDs = ["1234", "5678"]
+  const friendlyDroneIDs = droneIDs.filter(
+    (id) => !IsEnemyDrone(+id) && +id != 255
+  );
 
   // const friendlyDroneIDs = droneIDs.filter(
   //   (id) => !IsEnemyDrone(+id)
