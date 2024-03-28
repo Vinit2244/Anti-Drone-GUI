@@ -1,6 +1,6 @@
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Map from "./components/Map";
 import ActionMenu from "./components/ActionMenu";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -15,7 +15,9 @@ import { MapControlProvider } from "./contexts/MapControlContext";
 import { FODDataProvider } from "./contexts/FODDataContext";
 import VideoFeedButton from "./components/VideoFeed";
 import VideoFeedButtonFullScreen from "./components/VideoFeedFullScreen";
-import TimeToKillTooltip from "./components/TimeToKillAlert"
+import TimeToKillSnackbar from "./components/TimeToKillAlert";
+
+
 
 const darkTheme = createTheme({
   palette: {
@@ -45,11 +47,9 @@ function App() {
   };
 
   const handleShowMapClick = () => {
-    showMap ?
-    setShowMap(false): setShowMap(true);
+    setShowMap((prevShowMap) => !prevShowMap);
   };
 
-  console.log({showMap})
   return (
     <ThemeProvider theme={currentTheme}>
       <CssBaseline />
@@ -58,6 +58,7 @@ function App() {
           <MapControlProvider>
             <FODDataProvider>
               <div className="appContainer">
+                <TimeToKillSnackbar />
                 {showMap ? (
                   fullScreenMap ? (
                     <Map
@@ -72,33 +73,41 @@ function App() {
                       toggleFullScreenMap={toggleFullScreenMap}
                     />
                   )
-                ):(<Map
-                  toggleTheme={toggleTheme}
-                  cName="mapWrapper-none"
-                  toggleFullScreenMap={toggleFullScreenMap}
-                />)
-                }
-                {!fullScreenMap && (
-                  <ActionMenu cName="actionMenu-right" />
+                ) : (
+                  <Map
+                    toggleTheme={toggleTheme}
+                    cName="mapWrapper-none"
+                    toggleFullScreenMap={toggleFullScreenMap}
+                  />
                 )}
+                {showMap ? (
+                  fullScreenMap ? (
+                    <VideoFeedButton
+                      cName="videoFeedButton-right"
+                      handleClick={handleShowMapClick}
+                    />
+                  ) : (
+                    <VideoFeedButton
+                      cName="videoFeedButton-left"
+                      handleClick={handleShowMapClick}
+                    />
+                  )
+                ) : fullScreenMap ? (
+                  <VideoFeedButtonFullScreen
+                    cName="imageContainerFullScreen"
+                    handleClick={handleShowMapClick}
+                  />
+                ) : (
+                  <VideoFeedButtonFullScreen
+                    cName="imageContainerFullLeft"
+                    handleClick={handleShowMapClick}
+                  />
+                )}
+
+                {!fullScreenMap && <ActionMenu cName="actionMenu-right" />}
                 {!fullScreenMap && (
                   <MissionControl cName="missionControl-right" />
                 )}
-                 {showMap ?
-                 (fullScreenMap ? (
-                  <VideoFeedButton cName="videoFeedButton-right" handleClick={handleShowMapClick}/>
-                ) : (
-                  <VideoFeedButton cName="videoFeedButton-left" handleClick={handleShowMapClick}/>
-                )
-              ):
-              (
-                fullScreenMap ? (
-                  <VideoFeedButtonFullScreen cName="imageContainerFullScreen" handleClick={handleShowMapClick}/>
-                ) : (
-                  <VideoFeedButtonFullScreen cName="imageContainerFullLeft" handleClick={handleShowMapClick}/>
-                )
-              )}
-              <TimeToKillTooltip />
               </div>
             </FODDataProvider>
           </MapControlProvider>

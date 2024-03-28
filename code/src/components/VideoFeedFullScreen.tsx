@@ -1,4 +1,4 @@
-import topography from "../assets/topography.jpeg"
+import topography from "../assets/topography.jpg"
 import Button from '@mui/material/Button';
 
 

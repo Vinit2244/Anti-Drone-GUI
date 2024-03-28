@@ -1,32 +1,72 @@
+
 import React, { useState, useEffect } from 'react';
-import Tooltip from '@mui/material/Tooltip';
-import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Typography from '@mui/material/Typography';
+import ScheduleSharpIcon from '@mui/icons-material/ScheduleSharp';
 
-export default function TimeToKillTooltip() {
+function TimeToKillSnackbar() {
   const [timeLeft, setTimeLeft] = useState(0);
+  const timerDuration = 100;
+  const [startTime, setStartTime] = useState(Date.now());
+  const [open, setOpen] = useState(true);
 
-  // Function to calculate time left to kill the enemy drone
   const timeToKill = () => {
-    // Replace this with your actual timeToKill function implementation
-    // For demonstration, let's set a timer for 60 seconds
-    return 60;
+    return Math.max(timerDuration - Math.floor((Date.now() - startTime) / 1000), 0);
   };
 
   useEffect(() => {
-    // Set up a timer to update the time left every second
+    setStartTime(Date.now());
     const interval = setInterval(() => {
-      setTimeLeft(timeToKill());
+      const remainingTime = timeToKill();
+      setTimeLeft(remainingTime);
+      setOpen(remainingTime > 0); // Close Snackbar if remainingTime is 0
     }, 1000);
 
-    // Clear the interval when the component unmounts
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []); // No dependencies here to run only once on mount
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
-    <Tooltip title={`Time To Kill: ${timeLeft} seconds`} style={{ zIndex: 1000 }}>
-      <Button variant="contained" color="primary">
-        Hover me
-      </Button>
-    </Tooltip>
+    <div className="timeToKillSnackbar">
+      <Snackbar
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        open={open}
+        onClose={handleClose}
+        message={
+          <Typography variant="body1" style={{ fontFamily: 'Roboto, sans-serif', display: 'flex', alignItems: 'center' }}>
+          <ScheduleSharpIcon style={{ marginRight: '0.5em' }} />
+          Time left to kill enemy drone: {timeLeft} seconds
+        </Typography>
+        }
+        ContentProps={{
+          sx:{
+            border: "0.1px solid #5ba25f",
+            borderRadius: "10px",
+            color: "#5ba25f",
+            bgcolor: "black",
+            fontWeight: "bold",
+            textAlign: "center",
+            // centering our message
+            width:"100%",
+            "& .MuiSnackbarContent-message":{
+              width:"inherit",
+              textAlign: "center",
+            }
+          }
+         }}
+      />
+    </div>
   );
 }
+
+
+
+export default TimeToKillSnackbar;

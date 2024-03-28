@@ -1,8 +1,9 @@
-import topography from "../assets/topography.jpeg"
-
+import topography from "../assets/topography.jpg"
+import Tooltip from '@mui/material/Tooltip';
 export default function VidoeFeedButton({cName, handleClick} : {cName: string; handleClick: () => void}) {
 
     return (
+        <Tooltip title="Click to View in full screen" placement="bottom-end">
         <button
             className={cName}
 
@@ -19,6 +20,7 @@ export default function VidoeFeedButton({cName, handleClick} : {cName: string; h
                 alt="animated icon"
             />
         </button>
+        </Tooltip>
     );
 }
 
