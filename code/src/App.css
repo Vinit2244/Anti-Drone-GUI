@@ -39,31 +39,26 @@
 
 .videoFeedButton-left {
   position: absolute;
-  top: 83%;
-  left: 49%; /* Adjust this value according to your layout */
-  transform: translateY(-50%);
-  z-index: 1000; /* Ensure it appears above other elements */
+  bottom: 10px;
+  right: 35%; /* Adjust this value according to your layout */
+  z-index: 1000;
   cursor: "pointer";
   border-radius: 50%;
   border: "none";
   background: "none";
   padding: 0;
-
 }
 
 .videoFeedButton-right {
   position: absolute;
-  top: 83%;
-  left: 83%;
-  /* Adjust this value according to your layout */
-  transform: translateY(-50%);
-  z-index: 1000; /* Ensure it appears above other elements */
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
   cursor: "pointer";
   border-radius: 50%;
   border: "none";
   background: "none";
   padding: 0;
-
 }
 
 .imageContainerFullLeft {
@@ -88,10 +83,15 @@
 }
 
 .videoFeedButtonToShowMap {
-  position: absolute; /* Position the button absolutely within its container */
-  top: 95%; /* Align button to the vertical center */
-  left: 91.3%; /* Align button to the horizontal center */
-  transform: translate(-50%, -50%); /* Center the button */
+  position: absolute;
+  bottom: 10px;
+  right: 10px; /* Adjust this value according to your layout */
+  z-index: 1000;
+  cursor: "pointer";
+  border-radius: 50%;
+  border: "none";
+  background: "none";
+  padding: 0;
 }
 
 /* for when map not video feed but sidebar still there */
@@ -100,20 +100,13 @@
   top: 10%; /* Align the snackbar vertically to the center */
   left: 38%; /* Align the snackbar horizontally to the center */
   transform: translate(-50%, -50%); /* Center the snackbar */
-  z-index: 1000; /* Ensure it appears above other elements */
-  /* width: 40vw; */
-
+  z-index: 1000;
 }
 
 .snackbar {
-  /* position: fixed;
-  top: 0;
-  left: 0;
-  right: 0; */
   background-color: green;
   color: white;
   text-align: center;
-  /* padding: 10px; */
   font-family: Arial, sans-serif;
   font-size: 18px;
   transition: background-color 0.5s;

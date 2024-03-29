@@ -1,6 +1,6 @@
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Map from "./components/Map";
 import ActionMenu from "./components/ActionMenu";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -16,8 +16,6 @@ import { FODDataProvider } from "./contexts/FODDataContext";
 import VideoFeedButton from "./components/VideoFeed";
 import VideoFeedButtonFullScreen from "./components/VideoFeedFullScreen";
 import TimeToKillSnackbar from "./components/TimeToKillAlert";
-
-
 
 const darkTheme = createTheme({
   palette: {

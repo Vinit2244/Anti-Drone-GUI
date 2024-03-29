@@ -1,19 +1,27 @@
 import topography from "../assets/topography.jpg"
-import Button from '@mui/material/Button';
+import WorldMap from '../assets/world_map.jpeg'
 
+export default function VidoeFeedButtonFullScreen({ cName, handleClick }: { cName: string; handleClick: () => void }) {
 
-export default function VidoeFeedButtonFullScreen({cName, handleClick} : {cName: string; handleClick: () => void}) {
-
-    return (
-      <div className={cName}>
+  return (
+    <div className={cName}>
+      <img
+        src={topography}
+        alt="animated icon"
+        className="videoFeedShownFull"
+      />
+      <button className="videoFeedButtonToShowMap" onClick={handleClick} color="inherit" style={{borderRadius: "50%"}}>
         <img
-          src={topography}
+          src={WorldMap}
+          style={{
+            width: "200px",
+            height: "200px",
+            objectFit: "cover",
+            borderRadius: "50%",
+          }}
           alt="animated icon"
-          className="videoFeedShownFull" // Assuming this class applies proper styling
         />
-        <Button className="videoFeedButtonToShowMap" variant="contained" onClick={handleClick} color="inherit" size="large">
-          Show Map
-        </Button>
-      </div>
-    );
+      </button>
+    </div>
+  );
 }
