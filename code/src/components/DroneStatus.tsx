@@ -16,6 +16,7 @@ import Checkbox from "@mui/material/Checkbox";
 import { PhaseContext } from "../contexts/PhaseContext";
 import { useSelector } from "@xstate/react";
 import Tooltip from "@mui/material/Tooltip";
+import { ToastContainer, toast } from "react-toastify";
 const DISCONNECT_INTERVAL = 5000; //ms
 import { selectColor } from "../colorCode";
 import { MapControlContext } from "../contexts/MapControlContext";
@@ -23,7 +24,7 @@ import DroneGPSStatus from "./DroneGPSStatus";
 import { HeartbeatPayload, LandedStatePayload } from "../types/payloads";
 import { FLIGHT_MODES } from "../constants/flight_modes";
 import { invoke } from "@tauri-apps/api";
-
+import "react-toastify/dist/ReactToastify.css";
 export function DroneStatus({ id }: { id: string }) {
   const [connected, setConnected] = useState(true);
   const [alerts, setAlerts] = useState([] as string[]);
@@ -72,7 +73,10 @@ export function DroneStatus({ id }: { id: string }) {
   }, []);
   useEffect(() => {
     const onHeartbeat = () => {
+      addAlert("Missing Heartbeat-2");
+
       setConnected((oldConnected) => {
+
         // if (!oldConnected) addAlert("Reconnected");
         return true;
       });
@@ -89,6 +93,7 @@ export function DroneStatus({ id }: { id: string }) {
     };
     const promise = listen(`heartbeat_${id}`, (event) => {
       let payload = event.payload as HeartbeatPayload;
+      addAlert("Missing Heartbeat - 1 ");
       setMode(payload.custom_mode);
       setState(
         payload.system_status.type
@@ -100,6 +105,8 @@ export function DroneStatus({ id }: { id: string }) {
     });
     onHeartbeat();
     return () => {
+      addAlert("Missing Heartbeat -3");
+
       setTimeoutHandler((prevTimeout) => {
         clearTimeout(prevTimeout);
         return prevTimeout;
@@ -303,3 +310,19 @@ export function DroneStatus({ id }: { id: string }) {
     </>
   );
 }
+
+
+
+
+// useEffect(() => {
+//   const onHeartbeat = () => {
+//     // Your existing logic here...
+
+//     // Raise alert when mode changes
+//     toast.info(`Mode changed to ${FLIGHT_MODES[mode]}`, {
+//       position: toast.POSITION.TOP_CENTER, // Customize position if needed
+//     });
+//   };
+
+//   // Your existing useEffect logic here...
+// }, [mode]); 
