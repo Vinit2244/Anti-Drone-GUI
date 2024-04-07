@@ -1,4 +1,5 @@
-use std::{error::Error, fs::File};
+// use std::{error::Error, fs::File};
+use std::fs::File;
 
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
@@ -44,7 +45,7 @@ impl NoKillZones {
                 let default_zones = NoKillZones {
                     zones: vec![NoKillZone::default()],
                 };
-                default_zones.save(path);
+                let _ = default_zones.save(path);
                 Ok(default_zones)
             }
         }
@@ -91,7 +92,7 @@ pub async fn add_no_kill_zone(app: AppHandle, new_zone: NoKillZone) {
         }
     };
     zones.zones.push(new_zone);
-    zones.save(&zones_path);
+    let _ = zones.save(&zones_path);
 }
 
 #[tauri::command]
@@ -112,5 +113,5 @@ pub async fn update_no_kill_zone(app: AppHandle, index: usize, new_zone: NoKillZ
     if index < zones.zones.len() {
         zones.zones[index] = new_zone;
     }
-    zones.save(&zones_path);
+    let _ = zones.save(&zones_path);
 }

@@ -1,0 +1,37 @@
+Fixed portions that were causing problems. Mostly were due to unused components. Commented out, NOT removed.
+
+Previous working commit (dev + build) : f72c1e5
+
+Detailed Changes:
+1. fod_watcher.rs:
+	- unused imports (std -> [char::MAX, io::BufReader, sync::{mpsc::TryRecvError, Arc, Mutex}, time::{Duration, Instant}]; self from foreign_object, notify and tauri::Manager)
+	- unused variables (MAX_FOD_BUFFER_SIZE and BUFFER_EMPTY_AFTER_DURATION)
+	- unused functions (add_multi_fod, watch, read_fod)
+	
+2. ftp.rs:
+	- None of the imports were used (super::messages; mavlink::ardupilotmega::MavMessage; std::{error::Error, fs::File, io::{Seek, Write}, ops::Range, path::Path, sync::{Arc, MutexGuard},time::{Duration, SystemTime},})
+	- unused variables (MAX_RETIRES, TIMEOUT_DURATION)
+	- unused functions (timed_get_response, req_op_code_seq_number_verifier, read_response_verifier, open_file_read, read_file_into_path, read_file_burst, burst_read, create_file, write_file, write_file_to_drone, list_files)
+
+3. main.rs
+	- unused imports (mavlink::ardupilotmega::FILE_TRANSFER_PROTOCOL_DATA, mavlink::ardupilotmega::REQUEST_DATA_STREAM_DATA, nokill::NoKillZone)
+	- main fn, changed setup variable name from app_handle to _ cause it was unused
+
+4. nokill.rsz
+	- Ignored last function result in (add_no_kill_zone, update_no_kill_zone, NoKillZones:load)
+	- unused import error
+
+5. settings.rs	
+	- Ignored last function result in (add_comm_link, update_comm_link, Settings:load)
+	- unused import error
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

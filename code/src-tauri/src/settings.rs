@@ -1,4 +1,5 @@
-use std::{error::Error, fs::File};
+// use std::{error::Error, fs::File};
+use std::fs::File;
 
 use super::usb_serial;
 use serde::{Deserialize, Serialize};
@@ -75,7 +76,7 @@ impl Settings {
             Ok(file) => Ok(serde_json::from_reader(file)?),
             Err(_) => {
                 let default_settings = Settings::default();
-                default_settings.save(path);
+                let _ = default_settings.save(path);
                 Ok(Settings::default())
             }
         }
@@ -121,7 +122,7 @@ pub async fn add_comm_link(app: tauri::AppHandle, new_comm_link: CommLink) {
         }
     };
     settings.connection_settings.comm_links.push(new_comm_link);
-    settings.save(&settings_path);
+    let _ = settings.save(&settings_path);
 }
 
 #[tauri::command]
@@ -141,5 +142,5 @@ pub async fn update_comm_link(app: tauri::AppHandle, index: usize, new_comm_link
     if index < settings.connection_settings.comm_links.len() {
         settings.connection_settings.comm_links[index] = new_comm_link;
     }
-    settings.save(&settings_path);
+    let _ = settings.save(&settings_path);
 }

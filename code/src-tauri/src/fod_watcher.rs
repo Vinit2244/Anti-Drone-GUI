@@ -1,27 +1,30 @@
 use std::{
+    // char::MAX,
     error::Error,
-    io::BufReader,
-    path::Path,
-    path::PathBuf,
-    sync::{mpsc::TryRecvError, Arc, Mutex},
-    time::{Duration, Instant},
+    // io::BufReader,
+    path::{Path, PathBuf},
+    // sync::{mpsc::TryRecvError, Arc, Mutex},
+    // time::{Duration, Instant},
 };
 
 use crate::{
+    // foreign_object::{
+    //     self, get_mission_dir_path, get_new_image_path, move_image_to_dir, ForeignObject,
+    //     MissionFODData,
+    // },
     foreign_object::{
-        self, get_mission_dir_path, get_new_image_path, move_image_to_dir, ForeignObject,
-        MissionFODData,
+        get_mission_dir_path, get_new_image_path, move_image_to_dir, ForeignObject, MissionFODData,
     },
     AppState,
 };
-use notify::{
-    Config, PollWatcher, RecommendedWatcher, RecursiveMode, Result, Watcher, WatcherKind,
-};
-use tauri::Manager;
+// use notify::{
+//     Config, PollWatcher, RecommendedWatcher, RecursiveMode, Result, Watcher, WatcherKind,
+// };
+// use tauri::Manager;
 use threadpool::ThreadPool;
 
-const MAX_FOD_BUFFER_SIZE: usize = 20;
-const BUFFER_EMPTY_AFTER_DURATION: Duration = Duration::from_secs(2);
+// const MAX_FOD_BUFFER_SIZE: usize = 20;
+// const BUFFER_EMPTY_AFTER_DURATION: Duration = Duration::from_secs(2);
 
 pub struct MissionFODSession {
     mission_dir: PathBuf,
@@ -46,7 +49,7 @@ impl MissionFODSession {
     }
     pub fn add_multi_fod(&self, fod_list: &mut Vec<ForeignObject>, pool: &ThreadPool) {
         let mut mission_data = self.load().unwrap();
-        for mut fod in fod_list.iter_mut() {
+        for fod in fod_list.iter_mut() {
             let old_image_path = fod.image_path.clone();
             let new_image_path =
                 get_new_image_path(&self.mission_dir, fod.image_path.clone()).unwrap();
@@ -151,92 +154,92 @@ pub async fn end_mission_session(
 //     }
 // }
 
-pub fn add_multi_fod(
-    session_mutex: Arc<Mutex<Option<MissionFODSession>>>,
-    fod_list: &mut Vec<ForeignObject>,
-    worker_pool: &ThreadPool,
-) {
-    let session = session_mutex.lock().unwrap();
-    match &(*session) {
-        Some(s) => s.add_multi_fod(fod_list, worker_pool),
-        None => {}
-    }
-}
+// pub fn add_multi_fod(
+//     session_mutex: Arc<Mutex<Option<MissionFODSession>>>,
+//     fod_list: &mut Vec<ForeignObject>,
+//     worker_pool: &ThreadPool,
+// ) {
+//     let session = session_mutex.lock().unwrap();
+//     match &(*session) {
+//         Some(s) => s.add_multi_fod(fod_list, worker_pool),
+//         None => {}
+//     }
+// }
 
-pub fn watch(app: tauri::AppHandle) -> Result<()> {
-    let (tx, rx) = std::sync::mpsc::channel();
-    // This example is a little bit misleading as you can just create one Config and use it for all watchers.
-    // That way the pollwatcher specific stuff is still configured, if it should be used.
-    let mut watcher: Box<dyn Watcher> = if RecommendedWatcher::kind() == WatcherKind::PollWatcher {
-        // custom config for PollWatcher kind
-        // you
-        let config = Config::default().with_poll_interval(Duration::from_secs(1));
-        Box::new(PollWatcher::new(tx, config).unwrap())
-    } else {
-        // use default config for everything else
-        Box::new(RecommendedWatcher::new(tx, Config::default()).unwrap())
-    };
-    // watch some stuff
-    watcher
-        .watch(
-            Path::new("/home/orin-arka/GlobalFODData"),
-            RecursiveMode::Recursive,
-        )
-        .unwrap();
+// pub fn watch(app: tauri::AppHandle) -> Result<()> {
+//     let (tx, rx) = std::sync::mpsc::channel();
+//     // This example is a little bit misleading as you can just create one Config and use it for all watchers.
+//     // That way the pollwatcher specific stuff is still configured, if it should be used.
+//     let mut watcher: Box<dyn Watcher> = if RecommendedWatcher::kind() == WatcherKind::PollWatcher {
+//         // custom config for PollWatcher kind
+//         // you
+//         let config = Config::default().with_poll_interval(Duration::from_secs(1));
+//         Box::new(PollWatcher::new(tx, config).unwrap())
+//     } else {
+//         // use default config for everything else
+//         Box::new(RecommendedWatcher::new(tx, Config::default()).unwrap())
+//     };
+//     // watch some stuff
+//     watcher
+//         .watch(
+//             Path::new("/home/orin-arka/GlobalFODData"),
+//             RecursiveMode::Recursive,
+//         )
+//         .unwrap();
 
-    // just print all events, this blocks forever
+//     // just print all events, this blocks forever
 
-    let mut fod_buffer = vec![];
-    let pool = threadpool::ThreadPool::new(8);
-    let mut last_set = Instant::now();
-    loop {
-        match rx.try_recv() {
-            Ok(e) => match e {
-                Ok(e) => match e.kind {
-                    notify::EventKind::Access(notify::event::AccessKind::Close(
-                        notify::event::AccessMode::Write,
-                    )) => {
-                        for path in e.paths {
-                            if path.extension() != Some(std::ffi::OsStr::new("json")) {
-                                continue;
-                            }
+//     let mut fod_buffer = vec![];
+//     let pool = threadpool::ThreadPool::new(8);
+//     let mut last_set = Instant::now();
+//     loop {
+//         match rx.try_recv() {
+//             Ok(e) => match e {
+//                 Ok(e) => match e.kind {
+//                     notify::EventKind::Access(notify::event::AccessKind::Close(
+//                         notify::event::AccessMode::Write,
+//                     )) => {
+//                         for path in e.paths {
+//                             if path.extension() != Some(std::ffi::OsStr::new("json")) {
+//                                 continue;
+//                             }
 
-                            match read_fod(&path) {
-                                Ok(fod) => {
-                                    // let state = app.state::<AppState>();
-                                    fod_buffer.push(fod);
-                                    last_set = Instant::now();
-                                    // add_fod(state.1.clone(), fod)
-                                }
-                                Err(e) => {
-                                    eprintln!("{e}")
-                                }
-                            }
-                        }
-                    }
-                    _ => {}
-                },
-                Err(e) => eprintln!("{e}"),
-            },
-            Err(TryRecvError::Empty) => {}
-            Err(e) => eprintln!("{e}"),
-        };
-        if !fod_buffer.is_empty()
-            && (fod_buffer.len() > MAX_FOD_BUFFER_SIZE
-                || Instant::now().duration_since(last_set) > BUFFER_EMPTY_AFTER_DURATION)
-        {
-            let state = app.state::<AppState>();
-            add_multi_fod(state.1.clone(), &mut fod_buffer, &pool);
-            fod_buffer.clear();
-        }
-    }
-}
+//                             match read_fod(&path) {
+//                                 Ok(fod) => {
+//                                     // let state = app.state::<AppState>();
+//                                     fod_buffer.push(fod);
+//                                     last_set = Instant::now();
+//                                     // add_fod(state.1.clone(), fod)
+//                                 }
+//                                 Err(e) => {
+//                                     eprintln!("{e}")
+//                                 }
+//                             }
+//                         }
+//                     }
+//                     _ => {}
+//                 },
+//                 Err(e) => eprintln!("{e}"),
+//             },
+//             Err(TryRecvError::Empty) => {}
+//             Err(e) => eprintln!("{e}"),
+//         };
+//         if !fod_buffer.is_empty()
+//             && (fod_buffer.len() > MAX_FOD_BUFFER_SIZE
+//                 || Instant::now().duration_since(last_set) > BUFFER_EMPTY_AFTER_DURATION)
+//         {
+//             let state = app.state::<AppState>();
+//             add_multi_fod(state.1.clone(), &mut fod_buffer, &pool);
+//             fod_buffer.clear();
+//         }
+//     }
+// }
 
-pub fn read_fod(
-    path: &std::path::Path,
-) -> std::result::Result<foreign_object::ForeignObject, Box<dyn std::error::Error>> {
-    let file = std::fs::File::open(path)?;
-    let reader = BufReader::new(file);
+// pub fn read_fod(
+//     path: &std::path::Path,
+// ) -> std::result::Result<foreign_object::ForeignObject, Box<dyn std::error::Error>> {
+//     let file = std::fs::File::open(path)?;
+//     let reader = BufReader::new(file);
 
-    Ok(serde_json::from_reader(reader)?)
-}
+//     Ok(serde_json::from_reader(reader)?)
+// }

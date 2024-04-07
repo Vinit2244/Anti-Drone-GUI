@@ -3,11 +3,14 @@
 
 use fod_watcher::MissionFODSession;
 use mavlink::ardupilotmega::{
-    MavLandedState, MavMessage, MavState, FILE_TRANSFER_PROTOCOL_DATA, REQUEST_DATA_STREAM_DATA,
+    // MavLandedState, MavMessage, MavState, FILE_TRANSFER_PROTOCOL_DATA, REQUEST_DATA_STREAM_DATA,
+    MavLandedState,
+    MavMessage,
+    MavState,
 };
 use mavlink::error::MessageReadError;
 use mavlink::MavHeader;
-use nokill::NoKillZone;
+// use nokill::NoKillZone;
 
 use settings::CommLink;
 use std::error::Error;
@@ -23,8 +26,8 @@ mod fod_watcher;
 pub mod foreign_object;
 mod ftp;
 pub mod messages;
-mod settings;
 mod nokill;
+mod settings;
 pub mod usb_serial;
 
 #[derive(Clone, serde::Serialize)]
@@ -477,7 +480,7 @@ fn main() {
             nokill::update_no_kill_zone
         ])
         .setup(|app| {
-            let app_handle = app.app_handle();
+            let _ = app.app_handle();
 
             // thread::spawn(|| fod_watcher::watch(app_handle));
             Ok(())
