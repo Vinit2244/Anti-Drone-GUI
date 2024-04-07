@@ -17,19 +17,14 @@ export function KillButton({
   initialLonLat: [number, number];
   noKillZones: NoKillZone[];
 }) {
-  /**
+  /*
    * Kill Button Component
    */
-  const enemyDrone = IsEnemyDrone(+id);
+  const enemyDrone = true;
   const notInNoKillZone = isNotInNoKillZone(initialLonLat, noKillZones);
-  // const notInNoKillZone = isNotInNoKillZone(+id, initialLonLat, noKillZones); // Debug
   const [hovered, setHovered] = useState(false);
 
-  // console.log(id, enemyDrone, notInNoKillZone);
-
   let buttonText = "";
-
-  // console.log(enemyDrone, notInNoKillZone);
 
   if (hovered) {
     if (notInNoKillZone) {

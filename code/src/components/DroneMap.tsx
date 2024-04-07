@@ -32,6 +32,7 @@ import droneBoxIcon from "../assets/droneBox.svg";
 import { NoKillZone } from "../types/payloads";
 import { toLonLat } from "ol/proj";
 import { IsEnemyDrone } from "./IsEnemyDrone";
+import { KillButton } from "./KillButton";
 
 function magnitude(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
@@ -59,7 +60,7 @@ function calcZoom(mapRef: RefObject<RMap>, droneLonLat1: [number, number]) {
 
   const resolution = getPointResolution(
     "EPSG:3857",
-    7.5 * distance,
+    20 * distance,
     view.getCenter() as [number, number]
   );
   const Zoom = Math.log2(156543.03392 / resolution);
@@ -227,13 +228,7 @@ export function DroneMap({
       </RStyle.RStyle>
       <RLayerVector zIndex={5}>
         <RStyle.RStyle>
-          <RStyle.RIcon
-            src={droneBoxIcon}
-            anchor={[0.5, 0.8]}
-            scale={0.04}
-            // width={30}
-            // height={30}
-          />
+          <RStyle.RIcon src={droneBoxIcon} anchor={[0.5, 0.8]} scale={0.04} />
         </RStyle.RStyle>
         <RFeature geometry={new Point(fromLonLat(initialLonLat))}></RFeature>
       </RLayerVector>
@@ -290,7 +285,15 @@ export function DroneMap({
           </ROverlay>
 
           <RPopup autoPan autoPosition ref={popupRef} trigger="click">
-            <Paper sx={{ margin: "15px", paddingX: "15px", paddingY: "5px" }}>
+            <Paper
+              sx={{
+                margin: "15px",
+                paddingX: "15px",
+                paddingY: "5px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}>
               <Typography textAlign="center" variant={"h5"}>
                 Details
               </Typography>
@@ -299,6 +302,15 @@ export function DroneMap({
               </div>
               <div>
                 <Typography>Velocity Z: {velocityZ}m/sec</Typography>
+              </div>
+              <div style={{ marginTop: "10px" }}>
+                {" "}
+                {/* Adjust margin as needed */}
+                <KillButton
+                  id={id}
+                  initialLonLat={initialLonLat}
+                  noKillZones={noKillZones}
+                />
               </div>
             </Paper>
           </RPopup>

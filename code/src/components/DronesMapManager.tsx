@@ -7,7 +7,8 @@ import { listen } from "@tauri-apps/api/event";
 import { PositionUpdatePayload } from "../types/payloads";
 import { DroneMap } from "./DroneMap";
 import { RMap } from "rlayers";
-import { NoKillZone } from "./IsNotInNoKillZone";
+// import { NoKillZone } from "./IsNotInNoKillZone";
+import { NoKillZone } from "../types/payloads";
 
 function magnitude(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
@@ -23,7 +24,7 @@ export function DronesMapManager({
   /**
    * Component handling all drones placement on map
    */
-  
+
   // const [drones, setDrones] = useState(
   //   [] as {
   //     id: string;
@@ -37,17 +38,17 @@ export function DronesMapManager({
   const hardcodedDrones = [
     {
       id: "1",
-      initialLonLat: [78.34, 17.45], 
-      initialVelocity: { speed: 0, angle: 0 }, 
-      initialAltitude: 100, 
-      initialVz: 0, 
+      initialLonLat: [78.34, 17.45],
+      initialVelocity: { speed: 0, angle: 0 },
+      initialAltitude: 100,
+      initialVz: 0,
     },
     // {
     //   id: "3",
-    //   initialLonLat: [78.35, 17.46], 
-    //   initialVelocity: { speed: 0, angle: 0 }, 
-    //   initialAltitude: 0, 
-    //   initialVz: 0, 
+    //   initialLonLat: [78.35, 17.46],
+    //   initialVelocity: { speed: 0, angle: 0 },
+    //   initialAltitude: 0,
+    //   initialVz: 0,
     // },
   ];
 
@@ -87,7 +88,7 @@ export function DronesMapManager({
         <DroneMap
           key={drone.id}
           id={drone.id}
-          initialLonLat={drone.initialLonLat}
+          initialLonLat={[drone.initialLonLat[0], drone.initialLonLat[1]]}
           initialVelocity={drone.initialVelocity}
           initialAltitude={drone.initialAltitude}
           initialVz={drone.initialVz}

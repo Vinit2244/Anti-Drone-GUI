@@ -65,6 +65,7 @@ export function DroneStatus({ id }: { id: string }) {
     invoke("set_messages_stream", { systemId: 0 });
     const promise = listen(`status_${id}`, (event) => {
       const status = (event.payload as { status_text: string }).status_text;
+      // console.log("test", status);
       addAlert(status);
     });
     return () => {
@@ -73,7 +74,7 @@ export function DroneStatus({ id }: { id: string }) {
   }, []);
   useEffect(() => {
     const onHeartbeat = () => {
-      addAlert("Missing Heartbeat-2");
+      // addAlert("Missing Heartbeat-2");
 
       setConnected((oldConnected) => {
 
@@ -93,7 +94,7 @@ export function DroneStatus({ id }: { id: string }) {
     };
     const promise = listen(`heartbeat_${id}`, (event) => {
       let payload = event.payload as HeartbeatPayload;
-      addAlert("Missing Heartbeat - 1 ");
+      // addAlert("Missing Heartbeat - 1 ") ;
       setMode(payload.custom_mode);
       setState(
         payload.system_status.type

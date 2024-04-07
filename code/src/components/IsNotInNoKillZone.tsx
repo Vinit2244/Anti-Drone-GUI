@@ -43,7 +43,7 @@ export function isNotInNoKillZone(
     var zoneLatitude = zone.latitude;
     var zoneLongitude = zone.longitude;
 
-    console.log(zoneLatitude, zoneLongitude);
+    // console.log(zoneLatitude, zoneLongitude);
 
     // const distance =
     //   Math.sqrt(
