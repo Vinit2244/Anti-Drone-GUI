@@ -94,8 +94,11 @@ export function DroneStatus({ id }: { id: string }) {
     };
     const promise = listen(`heartbeat_${id}`, (event) => {
       let payload = event.payload as HeartbeatPayload;
-      // addAlert("Missing Heartbeat - 1 ") ;
       setMode(payload.custom_mode);
+      addAlert(FLIGHT_MODES[mode]) ;
+      //     toast.info(`Mode changed to ${FLIGHT_MODES[mode]}`, {
+        //       position: toast.POSITION.TOP_CENTER, // Customize position if needed
+      //     });
       setState(
         payload.system_status.type
           .slice(10)
