@@ -1,5 +1,7 @@
-import { useContext, useEffect, useState } from "react";
-import { emit, listen } from "@tauri-apps/api/event";
+import React, { useContext, useEffect, useState } from "react";
+import Snackbar from "@mui/material/Snackbar";
+import Typography from "@mui/material/Typography";
+import ScheduleSharpIcon from "@mui/icons-material/ScheduleSharp";
 import {
   Box,
   Card,
@@ -8,116 +10,33 @@ import {
   Modal,
   Stack,
   SvgIcon,
-  Typography,
 } from "@mui/material";
 import { ReactComponent as DroneIcon } from "../assets/drone.svg";
-import DroneBatteryIndicator from "./DroneBatteryIndicator";
 import Checkbox from "@mui/material/Checkbox";
 import { PhaseContext } from "../contexts/PhaseContext";
 import { useSelector } from "@xstate/react";
 import Tooltip from "@mui/material/Tooltip";
-import { ToastContainer, toast } from "react-toastify";
+import { FLIGHT_MODES } from "../constants/flight_modes";
+import { listen } from "@tauri-apps/api/event";
+
 const DISCONNECT_INTERVAL = 5000; //ms
 import { selectColor } from "../colorCode";
 import { MapControlContext } from "../contexts/MapControlContext";
+import DroneBatteryIndicator from "./DroneBatteryIndicator";
 import DroneGPSStatus from "./DroneGPSStatus";
 import { HeartbeatPayload, LandedStatePayload } from "../types/payloads";
-import { FLIGHT_MODES } from "../constants/flight_modes";
-import { invoke } from "@tauri-apps/api";
-import "react-toastify/dist/ReactToastify.css";
+
 export function DroneStatus({ id }: { id: string }) {
   const [connected, setConnected] = useState(true);
   const [alerts, setAlerts] = useState([] as string[]);
   const [mode, setMode] = useState(100);
   const [state, setState] = useState("Unknown");
-  const [landedState, setLandedState] = useState(
-    undefined as undefined | string
+  const [modeChanged, setModeChanged] = useState(false);
+  const [modeChangeMessage, setModeChangeMessage] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [landedState, setLandedState] = useState<string | undefined>(
+    undefined
   );
-  const addAlert = (alert: string) => {
-    setAlerts((newAlerts) => {
-      console.log(newAlerts);
-      return [alert, ...newAlerts];
-    });
-  };
-  const setTimeoutHandler = useState<NodeJS.Timeout | undefined>(undefined)[1];
-  useEffect(() => {
-    const promise = listen(`landed_state_${id}`, (event) => {
-      if (
-        (event.payload as LandedStatePayload).landed_state.type ==
-        "MAV_LANDED_STATE_UNDEFINED"
-      ) {
-        setLandedState(undefined);
-        return;
-      }
-      const landedState = (
-        event.payload as LandedStatePayload
-      ).landed_state.type
-        .slice(17)
-        .replaceAll("_", " ")
-        .toLocaleLowerCase();
-      setLandedState(landedState);
-    });
-    return () => {
-      promise.then((remove) => remove());
-    };
-  }, []);
-  useEffect(() => {
-    invoke("set_messages_stream", { systemId: 0 });
-    const promise = listen(`status_${id}`, (event) => {
-      const status = (event.payload as { status_text: string }).status_text;
-      // console.log("test", status);
-      addAlert(status);
-    });
-    return () => {
-      promise.then((remove) => remove());
-    };
-  }, []);
-  useEffect(() => {
-    const onHeartbeat = () => {
-      // addAlert("Missing Heartbeat-2");
-
-      setConnected((oldConnected) => {
-
-        // if (!oldConnected) addAlert("Reconnected");
-        return true;
-      });
-      const timeoutHandler = setTimeout(() => {
-        setConnected(false);
-        setTimeoutHandler(undefined);
-        // addAlert("Missing Heartbeat");
-        // putEnd(id);
-      }, DISCONNECT_INTERVAL);
-      setTimeoutHandler((prevTimeout) => {
-        if (prevTimeout !== undefined) clearTimeout(prevTimeout);
-        return timeoutHandler;
-      });
-    };
-    const promise = listen(`heartbeat_${id}`, (event) => {
-      let payload = event.payload as HeartbeatPayload;
-      setMode(payload.custom_mode);
-      addAlert(FLIGHT_MODES[mode]) ;
-      //     toast.info(`Mode changed to ${FLIGHT_MODES[mode]}`, {
-        //       position: toast.POSITION.TOP_CENTER, // Customize position if needed
-      //     });
-      setState(
-        payload.system_status.type
-          .slice(10)
-          .replaceAll("_", " ")
-          .toLocaleLowerCase()
-      );
-      onHeartbeat();
-    });
-    onHeartbeat();
-    return () => {
-      addAlert("Missing Heartbeat -3");
-
-      setTimeoutHandler((prevTimeout) => {
-        clearTimeout(prevTimeout);
-        return prevTimeout;
-      });
-      promise.then((remove) => remove());
-    };
-  }, []);
 
   const phaseServices = useContext(PhaseContext);
   const { send } = phaseServices.phaseService;
@@ -128,12 +47,6 @@ export function DroneStatus({ id }: { id: string }) {
         (selectedID) => selectedID.toString() === id
       ) !== undefined
   );
-  useEffect(() => {
-    send({
-      type: "Add Selected Drones",
-      newSelectedDrone: +id,
-    });
-  }, []);
 
   const { mapControlService } = useContext(MapControlContext);
   const { send: mapControlSend } = mapControlService;
@@ -143,14 +56,93 @@ export function DroneStatus({ id }: { id: string }) {
       state.matches("Drone Selected") && state.context.selectedID === id
   );
 
-  const enableSelect = useSelector(phaseServices.phaseService, (state) =>
-    state.matches("Connected.Initial")
-  );
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
 
-  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  useEffect(() => {
+    const promise = listen(`landed_state_${id}`, (event) => {
+      const landedStatePayload = event.payload as LandedStatePayload;
+      const type = landedStatePayload.landed_state.type;
+      if (type === "MAV_LANDED_STATE_UNDEFINED") {
+        setLandedState(undefined);
+      } else {
+        const landedState = type
+          .slice(17)
+          .replaceAll("_", " ")
+          .toLocaleLowerCase();
+        setLandedState(landedState);
+      }
+    });
+    return () => {
+      promise.then((remove) => remove());
+    };
+  }, [id]);
+
+  useEffect(() => {
+    const onHeartbeat = () => {
+      setConnected(true);
+      const timeoutHandler = setTimeout(() => {
+        setConnected(false);
+      }, DISCONNECT_INTERVAL);
+      return () => clearTimeout(timeoutHandler);
+    };
+
+    const promise = listen(`heartbeat_${id}`, (event) => {
+      const payload = event.payload as HeartbeatPayload;
+      setMode(payload.custom_mode);
+      setModeChanged(true);
+    });
+
+    return () => {
+      promise.then((remove) => remove());
+    };
+  }, [id]);
+
+  useEffect(() => {
+    if (modeChanged) {
+      setModeChangeMessage(`Mode changed to ${FLIGHT_MODES[mode]}`);
+      setSnackbarOpen(true);
+      setModeChanged(false);
+    }
+  }, [modeChanged, mode]);
+
   return (
     <>
-      <Modal open={statusModalOpen} onClose={() => setStatusModalOpen(false)}>
+      <Snackbar
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        message={
+          <Typography
+            variant="body1"
+            style={{ fontFamily: "Roboto, sans-serif", display: "flex", alignItems: "center" }}
+          >
+            <ScheduleSharpIcon style={{ marginRight: "0.5em" }} />
+            {modeChangeMessage}
+          </Typography>
+        }
+        ContentProps={{
+          sx: {
+            border: "0.1px solid #5ba25f",
+            borderRadius: "10px",
+            color: "#5ba25f",
+            bgcolor: "black",
+            fontWeight: "bold",
+            textAlign: "center",
+            width: "100%",
+            "& .MuiSnackbarContent-message": {
+              width: "inherit",
+              textAlign: "center",
+            },
+          },
+        }}
+      />
+      <Modal open={false} onClose={() => {}}>
         <Box
           sx={{
             position: "absolute" as "absolute",
@@ -189,10 +181,8 @@ export function DroneStatus({ id }: { id: string }) {
           <Stack>
             <Tooltip
               placement="top"
-              title={alerts.length !== 0 ? alerts.at(0) : "No Alerts"}
-              onClick={() => {
-                setStatusModalOpen(true);
-              }}
+              title={alerts.length !== 0 ? alerts[0] : "No Alerts"}
+              onClick={() => {}}
               sx={{ cursor: "pointer", pointerEvents: "auto" }}
             >
               <Typography
@@ -202,7 +192,7 @@ export function DroneStatus({ id }: { id: string }) {
                 overflow="hidden"
                 textOverflow="ellipsis"
               >
-                {alerts.length !== 0 ? alerts.at(0) : "No Alerts"}
+                {alerts.length !== 0 ? alerts[0] : "No Alerts"}
               </Typography>
             </Tooltip>
             <Box
@@ -281,7 +271,7 @@ export function DroneStatus({ id }: { id: string }) {
                 }}
                 label={
                   <Stack direction="row">
-                    <SvgIcon component={DroneIcon} inheritViewBox />
+                    <SvgIcon component={DroneIcon} viewBox="0 0 24 24" />
                     <Typography>: {id}</Typography>
                   </Stack>
                 }
@@ -290,7 +280,6 @@ export function DroneStatus({ id }: { id: string }) {
               <DroneBatteryIndicator id={id} />
               <DroneGPSStatus id={id} />
               <Checkbox
-                // disabled={!enableSelect || !connected}
                 checked={isSelected}
                 sx={{ paddingX: "0", pointerEvents: "auto" }}
                 onChange={(e) => {
@@ -315,18 +304,4 @@ export function DroneStatus({ id }: { id: string }) {
   );
 }
 
-
-
-
-// useEffect(() => {
-//   const onHeartbeat = () => {
-//     // Your existing logic here...
-
-//     // Raise alert when mode changes
-//     toast.info(`Mode changed to ${FLIGHT_MODES[mode]}`, {
-//       position: toast.POSITION.TOP_CENTER, // Customize position if needed
-//     });
-//   };
-
-//   // Your existing useEffect logic here...
-// }, [mode]); 
+export default DroneStatus;
