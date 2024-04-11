@@ -4,7 +4,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import ScheduleSharpIcon from '@mui/icons-material/ScheduleSharp';
 
-function TimeToKillSnackbar() {
+function TimeToKillSnackbar({cName} : {cName: string}) {
   const [timeLeft, setTimeLeft] = useState(0);
   const timerDuration = 100;
   const [startTime, setStartTime] = useState(Date.now());
@@ -32,7 +32,7 @@ function TimeToKillSnackbar() {
   };
 
   return (
-    <div className="timeToKillSnackbar">
+    <div className={cName}>
       <Snackbar
         anchorOrigin={{
           vertical: "top",

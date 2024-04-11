@@ -56,7 +56,10 @@ function App() {
           <MapControlProvider>
             <FODDataProvider>
               <div className="appContainer">
-                <TimeToKillSnackbar />
+                {fullScreenMap ?
+                <TimeToKillSnackbar cName="timeToKillSnackbarFull"/>
+                :
+                <TimeToKillSnackbar cName="timeToKillSnackbar"/>}
                 {showMap ? (
                   fullScreenMap ? (
                     <Map
