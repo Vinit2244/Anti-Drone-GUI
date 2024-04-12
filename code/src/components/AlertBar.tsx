@@ -11,9 +11,42 @@ import TelemetryConnectionStatus from "./TelemetryConnectionStatus";
 import { OnlyConnected, ShowTakeoff } from "./Only";
 import { ProgressStatus } from "./ProgressStatus";
 import SwipeableReadyDrawer from "./SwipeableReadyDrawer"
+import { useEffect } from "react";
+import { listen } from "@tauri-apps/api/event";
+import { IsEnemyDrone } from "./IsEnemyDrone";
 
 function AlertBar({ toggleGraticule, toggleTheme, toggleFullScreenMap }: { toggleGraticule: () => void; toggleTheme: () => void; toggleFullScreenMap: () => void }) {
   const [openSettings, setOpenSettings] = useState(false);
+  const [droneIDs, setDroneIDs] = useState([] as string[]);
+
+  useEffect(() => {
+    const promise = listen("heartbeat", (event) => {
+      const id = (event.payload as { system_id: string }).system_id;
+      setDroneIDs((prevDroneIDs) => {
+        if (prevDroneIDs.find((droneID) => droneID === id) === undefined)
+          return [...prevDroneIDs, id];
+        return prevDroneIDs;
+      });
+    });
+    return () => {
+      promise.then((remove) => remove());
+    };
+  }, []);
+
+  // Hard coded drones
+  // const friendlyDroneIDs = ["1234", "5678"]
+
+  /*
+   * Get list of friendly drones
+   */
+  const friendlyDroneIDs = droneIDs.filter(
+    (id) => !IsEnemyDrone(+id) && +id != 255
+  );
+
+  // const friendlyDroneIDs = droneIDs.filter(
+  //   (id) => !IsEnemyDrone(+id)
+  // );
+
   return (
     <>
       <Modal open={openSettings} onClose={() => setOpenSettings(false)}>
@@ -37,7 +70,7 @@ function AlertBar({ toggleGraticule, toggleTheme, toggleFullScreenMap }: { toggl
           <Stack sx={{ marginX: "2%", justifyContent: "space-between" }} spacing={1} direction="row">
             {/* All the things that are to be aligned left in this div */}
             <div>
-              <SwipeableReadyDrawer/>
+              <SwipeableReadyDrawer id = {friendlyDroneIDs[0]}/>
             </div>
             {/* All the things that are to be aligned right in this div */}
             <div>

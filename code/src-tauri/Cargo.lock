@@ -1636,7 +1636,7 @@ checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
 [[package]]
 name = "mavlink"
 version = "0.11.2"
-source = "git+https://github.com/Arka-Aerospace/rust-mavlink.git#a31d46063f59afbc11fe6d8c1dac6923100f9e6a"
+source = "git+https://github.com/Arka-Aerospace/Custom_Mavlink_Rust1.git#10b02ef6f161854ebf16883a0376f05d594fc445"
 dependencies = [
  "bitflags",
  "byteorder",

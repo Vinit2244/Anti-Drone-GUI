@@ -13,6 +13,11 @@ export interface PositionUpdatePayload {
   system_id: string;
 }
 
+export interface SystemStatusPayload {
+  payload: string;
+  system_id: string;
+}
+
 enum MAV_BATTERY_FUNCTION {
   MAV_BATTERY_FUNCTION_UNKNOWN = 0,
   MAV_BATTERY_FUNCTION_ALL = 1,
@@ -96,13 +101,11 @@ export interface CommLink {
   comm_link_type: SerialCommLink | TcpCommLink | UdpCommLink;
   name: string;
 }
+
 export interface NoKillZone {
   id: string;
   name:string;
   latitude: number;
   longitude: number;
-  radius: number;
-  
+  radius: number; 
 }
-
-
