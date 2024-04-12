@@ -80,7 +80,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`pre_arm_check_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Pre-Arm Check": "success",
@@ -95,7 +95,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`pre_arm_check_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Pre-Arm Check": "error",
@@ -110,7 +110,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`gyroscope_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Gyro": "success",
@@ -125,7 +125,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`gyroscope_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Gyro": "error",
@@ -140,7 +140,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`accelerometer_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Accelerometer": "success",
@@ -155,7 +155,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`accelerometer_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Accelerometer": "error",
@@ -170,7 +170,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`magnetometer_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Magnetometer": "success",
@@ -185,7 +185,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`magnetometer_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Magnetometer": "error",
@@ -200,7 +200,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`absolute_pressure_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Absolute Pressure": "success",
@@ -215,7 +215,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`absolute_pressure_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Absolute Pressure": "error",
@@ -230,7 +230,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`gps_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "GPS": "success",
@@ -245,7 +245,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`gps_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "GPS": "error",
@@ -260,7 +260,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`angular_rate_control_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Angular Rate Control": "success",
@@ -275,7 +275,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`angular_rate_control_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Angular Rate Control": "error",
@@ -290,7 +290,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`altitude_stabilization_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Altitude Stabilization": "success",
@@ -305,7 +305,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`altitude_stabilization_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Altitude Stabilization": "error",
@@ -320,7 +320,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`yaw_position_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Yaw Position": "success",
@@ -335,7 +335,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`yaw_position_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Yaw Position": "error",
@@ -350,7 +350,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`z_altitude_control_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Z Altitude Control": "success",
@@ -365,7 +365,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`z_altitude_control_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Z Altitude Control": "error",
@@ -380,7 +380,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`xy_position_control_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "X/Y Position Control": "success",
@@ -395,7 +395,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`xy_position_control_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "X/Y Position Control": "error",
@@ -410,7 +410,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`motor_output_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Motor Outputs/Control": "success",
@@ -425,7 +425,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`motor_output_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Motor Outputs/Control": "error",
@@ -440,7 +440,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`rc_receiver_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "RC Receiver": "success",
@@ -455,7 +455,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`rc_receiver_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "RC Receiver": "error",
@@ -470,7 +470,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`ahrs_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "AHRS": "success",
@@ -485,7 +485,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`ahrs_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "AHRS": "error",
@@ -500,7 +500,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`terrain_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Terrain": "success",
@@ -515,7 +515,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`terrain_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Terrain": "error",
@@ -530,7 +530,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`battery_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Battery": "success",
@@ -545,7 +545,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`battery_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Battery": "error",
@@ -560,7 +560,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`propulsion_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Propulsion": "success",
@@ -575,7 +575,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`propulsion_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Propulsion": "error",
@@ -590,7 +590,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`geofence_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "GeoFence": "success",
@@ -605,7 +605,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`geofence_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "GeoFence": "error",
@@ -620,7 +620,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`logging_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Logging": "success",
@@ -635,7 +635,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`logging_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Logging": "error",
@@ -650,7 +650,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`proximity_status_ok`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Proximity": "success",
@@ -665,7 +665,7 @@ export default function SwipeableReadyDrawer({ id }: { id: string }) {
     React.useEffect(() => {
         const promise = listen(`proximity_status_error`, (event) => {
             const payload = event.payload as SystemStatusPayload;
-            if (payload.system_id != "255" && !IsEnemyDrone(+payload.system_id)) {
+            if (payload.system_id != "255") { // Here instead of != 255 check that the drone should be friendly drone
                 setReadyButtonStates((prevState) => ({
                     ...prevState,
                     "Proximity": "error",
