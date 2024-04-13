@@ -22,7 +22,7 @@ import { DateTimeDisplay } from "./DateTimeDisplay";
 import AlertBar from "./AlertBar";
 import "./Map.css";
 
-const centerPoint = [149.1615057, -35.3606176] as [number, number]; // [Longitude, Latitude]
+const centerPoint = [78.34694,17.44635] as [number, number]; // [Longitude, Latitude]
 const center = fromLonLat(centerPoint);
 
 export default function Simple({

@@ -6,7 +6,7 @@ import { RefObject, useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { PositionUpdatePayload } from "../types/payloads";
 import { DroneMap } from "./DroneMap";
-import {RogueDroneMap } from "./RogueDroneMap";
+import { RogueDroneMap } from "./RogueDroneMap";
 import { RMap } from "rlayers";
 // import { NoKillZone } from "./IsNotInNoKillZone";
 import { NoKillZone } from "../types/payloads";
@@ -39,15 +39,15 @@ export function DronesMapManager({
 
   // const hardcodedDrones = [
   //   {
-  //     id: "1",  // Rogue
-  //     initialLonLat: [78.34, 17.45],
+  //     id: "2", // Rogue
+  //     initialLonLat: [78.343434, 17.453434],
   //     initialVelocity: { speed: 0, angle: 0 },
   //     initialAltitude: 100,
   //     initialVz: 0,
   //   },
   //   {
-  //     id: "2",  // Friendly
-  //     initialLonLat: [78.35, 17.46],
+  //     id: "7", // Friendly
+  //     initialLonLat: [78.353434, 17.463434],
   //     initialVelocity: { speed: 0, angle: 0 },
   //     initialAltitude: 0,
   //     initialVz: 0,
@@ -87,20 +87,21 @@ export function DronesMapManager({
   /*
    * Get list of friendly drones
    */
-  const friendlyDroneIDs = drones.filter(
-    (drone) => !IsEnemyDrone(+drone.id) && +drone.id != 255
-  );
+  // const friendlyDroneIDs = drones.filter(
+  //   (drone) => !IsEnemyDrone(+drone.id) && +drone.id != 255
+  // );
 
   /*
    * Get list of rogue drones
    */
-  const rogueDroneIDs = drones.filter(
-    (drone) => IsEnemyDrone(+drone.id) && +drone.id != 255
-  );
+  // const rogueDroneIDs = drones.filter(
+  //   (drone) => IsEnemyDrone(+drone.id) && +drone.id != 255
+  // );
 
+  // console.log([drones[0].initialLonLat[0], drones[0].initialLonLat[1]]);
   return (
     <>
-      {/* {drones.map((drone) => (
+      {drones.map((drone) => (
         <DroneMap
           key={drone.id}
           id={drone.id}
@@ -111,8 +112,8 @@ export function DronesMapManager({
           mapRef={mapRef}
           noKillZones={noKillZones}
         />
-      ))} */}
-      <DroneMap
+      ))}
+      {/* <DroneMap
           key={drones[0].id}
           id={drones[0].id}
           initialLonLat={[drones[0].initialLonLat[0], drones[0].initialLonLat[1]]}
@@ -121,9 +122,9 @@ export function DronesMapManager({
           initialVz={drones[0].initialVz}
           mapRef={mapRef}
           noKillZones={noKillZones}
-        />
+        /> */}
 
-        <RogueDroneMap
+      {/* <RogueDroneMap
           key={drones[1].id}
           id={drones[1].id}
           initialLonLat={[drones[1].initialLonLat[0], drones[1].initialLonLat[1]]}
@@ -132,7 +133,7 @@ export function DronesMapManager({
           initialVz={drones[1].initialVz}
           mapRef={mapRef}
           // noKillZones={noKillZones}
-        />
+        /> */}
     </>
   );
 }

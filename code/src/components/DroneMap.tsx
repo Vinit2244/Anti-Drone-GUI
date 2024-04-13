@@ -1,5 +1,3 @@
-// This Drone Map is for friendly Drone
-
 import { LineString, Point } from "ol/geom";
 import { fromLonLat, getPointResolution } from "ol/proj";
 import {
@@ -40,36 +38,39 @@ function magnitude(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
 }
 
-// function calcZoom(mapRef: RefObject<RMap>, droneLonLat1: [number, number]) {
-//   if (mapRef.current === null) return 0;
-//   const view = mapRef.current.ol.getView();
-//   let lon1: number = (droneLonLat1[0] * Math.PI) / 180;
-//   let lon2: number =
-//     (toLonLat(view.getCenter() as [number, number])[0] * Math.PI) / 180;
-//   let lat1: number = (droneLonLat1[1] * Math.PI) / 180;
-//   let lat2: number =
-//     (toLonLat(view.getCenter() as [number, number])[1] * Math.PI) / 180;
+function calcZoom(mapRef: RefObject<RMap>, droneLonLat1: [number, number]) {
+  // console.log(droneLonLat1);
+  if (mapRef.current === null) return 0;
+  const view = mapRef.current.ol.getView();
+  let lon1: number = (droneLonLat1[0] * Math.PI) / 180;
+  let lon2: number =
+    (toLonLat(view.getCenter() as [number, number])[0] * Math.PI) / 180;
+  let lat1: number = (droneLonLat1[1] * Math.PI) / 180;
+  let lat2: number =
+    (toLonLat(view.getCenter() as [number, number])[1] * Math.PI) / 180;
 
-//   let dlon = lon2 - lon1;
-//   let dlat = lat2 - lat1;
-//   let a =
-//     Math.pow(Math.sin(dlat / 2), 2) +
-//     Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2);
+  let dlon = lon2 - lon1;
+  let dlat = lat2 - lat1;
+  let a =
+    Math.pow(Math.sin(dlat / 2), 2) +
+    Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2);
 
-//   let c = 2 * Math.asin(Math.sqrt(a));
-//   let r = 6371;
-//   const distance = c * r; // In km
+  let c = 2 * Math.asin(Math.sqrt(a));
+  let r = 6371;
+  const distance = c * r; // In km
 
-//   const resolution = getPointResolution(
-//     "EPSG:3857",
-//     20 * distance,
-//     view.getCenter() as [number, number]
-//   );
-//   const Zoom = Math.log2(156543.03392 / resolution);
-//   console.log(Zoom);
-//   if (Zoom > 20) return 20;
-//   return Zoom;
-// }
+  // console.log(distance);
+
+  const resolution = getPointResolution(
+    "EPSG:3857",
+    20 * distance,
+    view.getCenter() as [number, number]
+  );
+  const Zoom = Math.log2(156543.03392 / resolution);
+  console.log(Zoom);
+  if (Zoom > 20) return 20;
+  return Zoom;
+}
 
 function distance(
   lonLat1: [number, number],
@@ -137,8 +138,11 @@ export function DroneMap({
 
   const [trailPoints, setTrailPoints] = useState<
     { lonLat: [number, number]; timestamp: number; color: string }[]
-  >([]);
-
+    >([]);
+  if (IsEnemyDrone(+id)) {
+    calcZoom(mapRef, initialLonLat);
+  }
+    
   useEffect(() => {
     const promise = listen(`position_update_${id}`, (event) => {
       const payload = event.payload as PositionUpdatePayload;
@@ -148,9 +152,13 @@ export function DroneMap({
       const newAlt = info.relative_alt / 1000;
 
       if (mapRef.current) {
-        mapRef.current.ol.getView().setCenter(fromLonLat([lon, lat]));    // Friendly drone is always at center
+        if (!IsEnemyDrone(+id))
+          mapRef.current.ol.getView().setCenter(fromLonLat([lon, lat])); // Friendly drone is always at center
         // mapRef.current.ol.getView().setCenter(fromLonLat(initialLonLat)); // Replace this with the current position of friendly drone (Always keep the friendly drone at center)
         // mapRef.current.ol.getView().setZoom(calcZoom(mapRef, [lon, lat])); // Update zoom only when the rogue drone is selected
+        else {
+          mapRef.current.ol.getView().setZoom(calcZoom(mapRef, [lon, lat]));
+        }
       }
 
       if (lonLat[0] !== lon || lonLat[1] !== lat) setLonLat([lon, lat]);
@@ -229,16 +237,16 @@ export function DroneMap({
           scale={1}
         />
       </RStyle.RStyle>
-      <RLayerVector zIndex={5}>
+      {/* <RLayerVector zIndex={5}>
         <RStyle.RStyle>
           <RStyle.RIcon src={droneBoxIcon} anchor={[0.5, 0.8]} scale={0.04} />
         </RStyle.RStyle>
         <RFeature geometry={new Point(fromLonLat(initialLonLat))}></RFeature>
-      </RLayerVector>
+      </RLayerVector> */}
       <RStyle.RStyle ref={velocityLineStyle}>
         <RStyle.RStroke color="black" width={2} />
       </RStyle.RStyle>
-      <RLayerVector zIndex={10}>
+      {/* <RLayerVector zIndex={10}>
         <RFeature geometry={new Point(fromLonLat(initialLonLat))}>
           <ROverlay className="no-interaction">
             <img
@@ -256,7 +264,7 @@ export function DroneMap({
             />
           </ROverlay>
         </RFeature>
-      </RLayerVector>
+      </RLayerVector> */}
       <RLayerVector
         style={isSelected ? selectedStyle : deselectedStyle}
         /* @ts-ignore */
