@@ -113,14 +113,14 @@ function LooperButton({
     <Button variant="contained" onClick={() => setActive(false)}>
       {cancelChildren}
     </Button>
-  ) : ( 
+  ) : (
     <Button variant="outlined" onClick={() => setActive(true)}>
       {children}
     </Button>
   );
 }
 
-export function MissionControl({cName} : {cName: string}) {
+export function MissionControl({ cName }: { cName: string }) {
   const phaseServices = useContext(PhaseContext);
   const { send } = phaseServices.phaseService;
   const { fodDataService } = useContext(FODDataContext);
@@ -159,10 +159,9 @@ export function MissionControl({cName} : {cName: string}) {
             gap: 7,
           }}
         >
-          {/* 8 Looper button templates */}
           <LooperButton
             delay={0}
-            cancelChildren={"Stop Button 1"}
+            cancelChildren={"Stop Abort"}
             onPress={async () => {
               try {
                 return true;
@@ -172,12 +171,12 @@ export function MissionControl({cName} : {cName: string}) {
               }
             }}
           >
-            Button 1
+            Abort
           </LooperButton>
 
           <LooperButton
             delay={0}
-            cancelChildren={"Stop Button 2"}
+            cancelChildren={"Stop Following"}
             onPress={async () => {
               try {
                 return true;
@@ -187,12 +186,12 @@ export function MissionControl({cName} : {cName: string}) {
               }
             }}
           >
-            Button 2
+            Follow Drone
           </LooperButton>
 
           <LooperButton
             delay={0}
-            cancelChildren={"Stop Button 3"}
+            cancelChildren={"Stop No Kill Follow"}
             onPress={async () => {
               try {
                 return true;
@@ -202,12 +201,12 @@ export function MissionControl({cName} : {cName: string}) {
               }
             }}
           >
-            Button 3
+            No Kill Follow
           </LooperButton>
 
           <LooperButton
             delay={0}
-            cancelChildren={"Stop Button 4"}
+            cancelChildren={"Stop Scan"}
             onPress={async () => {
               try {
                 return true;
@@ -217,22 +216,33 @@ export function MissionControl({cName} : {cName: string}) {
               }
             }}
           >
-            Button 4
+            Scan
           </LooperButton>
 
           <LooperButton
             delay={0}
-            cancelChildren={"Stop Button 5"}
+            cancelChildren={"Stop Setting RTL"}
             onPress={async () => {
               try {
-                return true;
+                const resp = (await invoke("set_mode", {
+                  mode: 6.0,
+                  systemIds: selectedDrones,
+                })) as { [key: number]: boolean };
+
+                for (const systemIds in resp) {
+                  if (Object.prototype.hasOwnProperty.call(resp, systemIds)) {
+                    const element = resp[systemIds];
+                    if (!element) return true;
+                  }
+                }
+                return false;
               } catch (e) {
                 console.error(e);
                 return false;
               }
             }}
           >
-            Button 5
+            RTH
           </LooperButton>
 
           <LooperButton
@@ -263,6 +273,21 @@ export function MissionControl({cName} : {cName: string}) {
             }}
           >
             Button 7
+          </LooperButton>
+
+          <LooperButton
+            delay={0}
+            cancelChildren={"Stop Button 8"}
+            onPress={async () => {
+              try {
+                return true;
+              } catch (e) {
+                console.error(e);
+                return false;
+              }
+            }}
+          >
+            Button 8
           </LooperButton>
 
           {/* <ShowTakeoff>
@@ -403,31 +428,6 @@ export function MissionControl({cName} : {cName: string}) {
           >
             Set AltHold
           </LooperButton> */}
-          <LooperButton
-            delay={0}
-            cancelChildren={"Stop Setting RTL"}
-            onPress={async () => {
-              try {
-                const resp = (await invoke("set_mode", {
-                  mode: 6.0,
-                  systemIds: selectedDrones,
-                })) as { [key: number]: boolean };
-
-                for (const systemIds in resp) {
-                  if (Object.prototype.hasOwnProperty.call(resp, systemIds)) {
-                    const element = resp[systemIds];
-                    if (!element) return true;
-                  }
-                }
-                return false;
-              } catch (e) {
-                console.error(e);
-                return false;
-              }
-            }}
-          >
-            RTH
-          </LooperButton>
           {/* <Button
             variant="outlined"
             onClick={() => {

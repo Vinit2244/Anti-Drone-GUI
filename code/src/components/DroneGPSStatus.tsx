@@ -1,11 +1,8 @@
 import Chip from "@mui/material/Chip";
-import { useMemo, useState, useEffect, useContext } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
-import { PositionUpdatePayload } from "../types/payloads";
-import { AddAlertContext } from "../contexts/AlertContext";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import LocationOffIcon from "@mui/icons-material/LocationOff";
-import { Tooltip } from "@mui/material";
 
 function ConnectedStatus({ satellitesVisible }: { satellitesVisible: number }) {
   return (

@@ -19,6 +19,9 @@ export function DronesStatus() {
    */
   const [droneIDs, setDroneIDs] = useState([] as string[]);
 
+  // hard coded
+  // const [droneIDs, setDroneIDs] = useState(["1", "2"] as string[]);
+ 
   useEffect(() => {
     const promise = listen("heartbeat", (event) => {
       const id = (event.payload as { system_id: string }).system_id;
@@ -39,9 +42,6 @@ export function DronesStatus() {
     (state) => !state.matches("Connected.Initial")
   );
 
-  // Hard coded drones
-  // const friendlyDroneIDs = ["1234", "5678"]
-
   /*
    * Get list of friendly drones
    */
@@ -49,9 +49,12 @@ export function DronesStatus() {
     (id) => !IsEnemyDrone(+id) && +id != 255
   );
 
-  // const friendlyDroneIDs = droneIDs.filter(
-  //   (id) => !IsEnemyDrone(+id)
-  // );
+  /*
+   * Get list of rogue drones
+   */
+  const rogueDroneIDs = droneIDs.filter(
+    (id) => IsEnemyDrone(+id) && +id != 255
+  );
 
   return (
     <Box width="100%" height="100%">
@@ -110,19 +113,19 @@ export function DronesStatus() {
           key={"Enemy Drone"}
           display="grid"
           sx={{ placeItems: "center" }}>
-          <EnemyDroneStatus id={"Enemy Drone"} />
+          <EnemyDroneStatus id={rogueDroneIDs[0]} />
         </Box>
         <Box
           marginBottom="3%"
           key={"Vital Status"}
           display="grid">
-          <VitalStatus id={"Vital Status"} />
+          <VitalStatus id={friendlyDroneIDs[0]} />
         </Box>
         <Box
           marginBottom="3%"
           key={"Ammunition Status"}
           display="grid">
-          <AmmunitionStatus id={"Ammunition Status"} />
+          <AmmunitionStatus id={friendlyDroneIDs[0]} />
         </Box>
       </Box>
     </Box>

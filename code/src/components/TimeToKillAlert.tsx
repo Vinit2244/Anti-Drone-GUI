@@ -1,12 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import ScheduleSharpIcon from '@mui/icons-material/ScheduleSharp';
 
 function TimeToKillSnackbar({cName} : {cName: string}) {
   const [timeLeft, setTimeLeft] = useState(0);
-  const timerDuration = 100;
+  const timerDuration = 5;
   const [startTime, setStartTime] = useState(Date.now());
   const [open, setOpen] = useState(true);
 

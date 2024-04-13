@@ -19,6 +19,9 @@ function AlertBar({ toggleGraticule, toggleTheme, toggleFullScreenMap }: { toggl
   const [openSettings, setOpenSettings] = useState(false);
   const [droneIDs, setDroneIDs] = useState([] as string[]);
 
+  // hard coded drones
+  // const [droneIDs, setDroneIDs] = useState(["1", "2"] as string[]);
+
   useEffect(() => {
     const promise = listen("heartbeat", (event) => {
       const id = (event.payload as { system_id: string }).system_id;
@@ -33,9 +36,6 @@ function AlertBar({ toggleGraticule, toggleTheme, toggleFullScreenMap }: { toggl
     };
   }, []);
 
-  // Hard coded drones
-  // const friendlyDroneIDs = ["1234", "5678"]
-
   /*
    * Get list of friendly drones
    */
@@ -43,9 +43,12 @@ function AlertBar({ toggleGraticule, toggleTheme, toggleFullScreenMap }: { toggl
     (id) => !IsEnemyDrone(+id) && +id != 255
   );
 
-  // const friendlyDroneIDs = droneIDs.filter(
-  //   (id) => !IsEnemyDrone(+id)
-  // );
+  /*
+   * Get list of rogue drones
+   */
+  const rogueDroneIDs = droneIDs.filter(
+    (id) => IsEnemyDrone(+id) && +id != 255
+  );
 
   return (
     <>

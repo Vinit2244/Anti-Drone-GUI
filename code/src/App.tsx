@@ -81,7 +81,7 @@ function App() {
                     toggleFullScreenMap={toggleFullScreenMap}
                   />
                 )}
-                {showMap ? (
+                {/* {showMap ? (
                   fullScreenMap ? (
                     <VideoFeedButton
                       cName="videoFeedButton-right"
@@ -103,7 +103,7 @@ function App() {
                     cName="imageContainerFullLeft"
                     handleClick={handleShowMapClick}
                   />
-                )}
+                )} */}
 
                 {!fullScreenMap && <ActionMenu cName="actionMenu-right" />}
                 {!fullScreenMap && (

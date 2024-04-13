@@ -2,10 +2,10 @@ import Paper from "@mui/material/Paper";
 import { OnlyConnected } from "./Only";
 import { DronesStatus } from "./DronesStatus";
 import { DronesStatusSkeleton } from "./DronesStatusSkeleton";
+
 function ActionMenu({cName} : {cName: string}) {
   return (
     <>
-
       <Paper className={cName}>
         <Paper
           style={{
@@ -25,8 +25,8 @@ function ActionMenu({cName} : {cName: string}) {
 
           {/* Template to be shown when no drone is connected */}
           <OnlyConnected not>
-            {/* Hard coded for displaying drone info for testing
-            <DronesStatus /> */}
+            {/* Hard coded for displaying drone info for testing */}
+            {/* <DronesStatus /> */}
             <DronesStatusSkeleton />
           </OnlyConnected>
         </Paper>

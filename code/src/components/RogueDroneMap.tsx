@@ -1,4 +1,4 @@
-// This Drone Map is for friendly Drone
+// This Drone Map is for rogue Drone
 
 import { LineString, Point } from "ol/geom";
 import { fromLonLat, getPointResolution } from "ol/proj";
@@ -19,7 +19,7 @@ import {
   RMap,
   RPopup,
 } from "rlayers";
-import { RFill } from "rlayers/style";
+// import { RFill } from "rlayers/style";
 import droneIcon from "../assets/mapDrone.svg";
 import selectedDroneIcon from "../assets/targetedDrone.svg";
 import { useRStyle } from "rlayers/style";
@@ -29,47 +29,47 @@ import { selectColor } from "../colorCode";
 import { MapControlContext } from "../contexts/MapControlContext";
 import { useSelector } from "@xstate/react";
 import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
+// import Typography from "@mui/material/Typography";
 import droneBoxIcon from "../assets/droneBox.svg";
 import { NoKillZone } from "../types/payloads";
 import { toLonLat } from "ol/proj";
-import { IsEnemyDrone } from "./IsEnemyDrone";
-import { KillButton } from "./KillButton";
+// import { IsEnemyDrone } from "./IsEnemyDrone";
+// import { KillButton } from "./KillButton";
 
 function magnitude(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
 }
 
-// function calcZoom(mapRef: RefObject<RMap>, droneLonLat1: [number, number]) {
-//   if (mapRef.current === null) return 0;
-//   const view = mapRef.current.ol.getView();
-//   let lon1: number = (droneLonLat1[0] * Math.PI) / 180;
-//   let lon2: number =
-//     (toLonLat(view.getCenter() as [number, number])[0] * Math.PI) / 180;
-//   let lat1: number = (droneLonLat1[1] * Math.PI) / 180;
-//   let lat2: number =
-//     (toLonLat(view.getCenter() as [number, number])[1] * Math.PI) / 180;
+function calcZoom(mapRef: RefObject<RMap>, droneLonLat1: [number, number]) {
+  if (mapRef.current === null) return 0;
+  const view = mapRef.current.ol.getView();
+  let lon1: number = (droneLonLat1[0] * Math.PI) / 180;
+  let lon2: number =
+    (toLonLat(view.getCenter() as [number, number])[0] * Math.PI) / 180;
+  let lat1: number = (droneLonLat1[1] * Math.PI) / 180;
+  let lat2: number =
+    (toLonLat(view.getCenter() as [number, number])[1] * Math.PI) / 180;
 
-//   let dlon = lon2 - lon1;
-//   let dlat = lat2 - lat1;
-//   let a =
-//     Math.pow(Math.sin(dlat / 2), 2) +
-//     Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2);
+  let dlon = lon2 - lon1;
+  let dlat = lat2 - lat1;
+  let a =
+    Math.pow(Math.sin(dlat / 2), 2) +
+    Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2);
 
-//   let c = 2 * Math.asin(Math.sqrt(a));
-//   let r = 6371;
-//   const distance = c * r; // In km
+  let c = 2 * Math.asin(Math.sqrt(a));
+  let r = 6371;
+  const distance = c * r; // In km
 
-//   const resolution = getPointResolution(
-//     "EPSG:3857",
-//     20 * distance,
-//     view.getCenter() as [number, number]
-//   );
-//   const Zoom = Math.log2(156543.03392 / resolution);
-//   console.log(Zoom);
-//   if (Zoom > 20) return 20;
-//   return Zoom;
-// }
+  const resolution = getPointResolution(
+    "EPSG:3857",
+    20 * distance,
+    view.getCenter() as [number, number]
+  );
+  const Zoom = Math.log2(156543.03392 / resolution);
+  console.log(Zoom);
+  if (Zoom > 20) return 20;
+  return Zoom;
+}
 
 function distance(
   lonLat1: [number, number],
@@ -79,30 +79,30 @@ function distance(
   return line.getLength();
 }
 
-const MIN_PATH_TRAIL_DISTANCE: number = 10;
-const TEN_MINUTES_IN_MS = 1 * 60 * 1000; // For now set to 1 minute, change when required
+// const MIN_PATH_TRAIL_DISTANCE: number = 10;
+// const TEN_MINUTES_IN_MS = 1 * 60 * 1000; // For now set to 1 minute, change when required
 
-function getColorBasedOnAltitude(altitude: number): string {
-  const MAX_ALTITUDE = 200;
+// function getColorBasedOnAltitude(altitude: number): string {
+//   const MAX_ALTITUDE = 200;
 
-  // Normalize altitude to a value between 0 and 1
-  const normalizedAltitude = altitude / MAX_ALTITUDE;
+//   // Normalize altitude to a value between 0 and 1
+//   const normalizedAltitude = altitude / MAX_ALTITUDE;
 
-  // Interpolate between red (low altitude) and green (high altitude)
-  const red = Math.round((1 - normalizedAltitude) * 255);
-  const green = Math.round(normalizedAltitude * 255);
+//   // Interpolate between red (low altitude) and green (high altitude)
+//   const red = Math.round((1 - normalizedAltitude) * 255);
+//   const green = Math.round(normalizedAltitude * 255);
 
-  return `rgb(${red}, ${green}, 0)`;
-}
+//   return `rgb(${red}, ${green}, 0)`;
+// }
 
-export function DroneMap({
+export function RogueDroneMap({
   id,
   initialLonLat,
   initialVelocity,
   initialVz,
   initialAltitude,
   mapRef,
-  noKillZones,
+//   noKillZones,
 }: {
   id: string;
   initialLonLat: [number, number];
@@ -110,7 +110,7 @@ export function DroneMap({
   initialVz: number;
   initialAltitude: number;
   mapRef: RefObject<RMap>;
-  noKillZones: NoKillZone[];
+//   noKillZones: NoKillZone[];
 }) {
   const [lonLat, setLonLat] = useState(initialLonLat);
   const [velocity, setVelocity] = useState(initialVelocity);
@@ -135,9 +135,9 @@ export function DroneMap({
 
   let shouldZoom = false;
 
-  const [trailPoints, setTrailPoints] = useState<
-    { lonLat: [number, number]; timestamp: number; color: string }[]
-  >([]);
+//   const [trailPoints, setTrailPoints] = useState<
+//     { lonLat: [number, number]; timestamp: number; color: string }[]
+//   >([]);
 
   useEffect(() => {
     const promise = listen(`position_update_${id}`, (event) => {
@@ -148,39 +148,39 @@ export function DroneMap({
       const newAlt = info.relative_alt / 1000;
 
       if (mapRef.current) {
-        mapRef.current.ol.getView().setCenter(fromLonLat([lon, lat]));    // Friendly drone is always at center
+        // mapRef.current.ol.getView().setCenter(fromLonLat([lon, lat]));    // Friendly drone is always at center
         // mapRef.current.ol.getView().setCenter(fromLonLat(initialLonLat)); // Replace this with the current position of friendly drone (Always keep the friendly drone at center)
-        // mapRef.current.ol.getView().setZoom(calcZoom(mapRef, [lon, lat])); // Update zoom only when the rogue drone is selected
+        mapRef.current.ol.getView().setZoom(calcZoom(mapRef, [lon, lat])); // Update zoom only when the rogue drone is selected
       }
 
       if (lonLat[0] !== lon || lonLat[1] !== lat) setLonLat([lon, lat]);
       const speed = magnitude(info.vx, info.vy);
       const angle = 2 * Math.PI - Math.atan2(info.vy, info.vx);
-      const lastTrailPoint =
-        trailPoints.length > 0
-          ? trailPoints[trailPoints.length - 1].lonLat
-          : initialLonLat;
+    //   const lastTrailPoint =
+    //     trailPoints.length > 0
+    //       ? trailPoints[trailPoints.length - 1].lonLat
+    //       : initialLonLat;
 
-      const currentTime = info.time_boot_ms;
+    //   const currentTime = info.time_boot_ms;
 
-      const altitudeColor = getColorBasedOnAltitude(newAlt);
-      if (distance(lastTrailPoint, [lon, lat]) > MIN_PATH_TRAIL_DISTANCE) {
-        setTrailPoints(
-          (prevTrailPoints) =>
-            [
-              ...prevTrailPoints,
-              {
-                lonLat: [lon, lat],
-                timestamp: currentTime,
-                color: altitudeColor,
-              },
-            ] as {
-              lonLat: [number, number];
-              timestamp: number;
-              color: string;
-            }[]
-        );
-      }
+    //   const altitudeColor = getColorBasedOnAltitude(newAlt);
+    //   if (distance(lastTrailPoint, [lon, lat]) > MIN_PATH_TRAIL_DISTANCE) {
+    //     setTrailPoints(
+    //       (prevTrailPoints) =>
+    //         [
+    //           ...prevTrailPoints,
+    //           {
+    //             lonLat: [lon, lat],
+    //             timestamp: currentTime,
+    //             color: altitudeColor,
+    //           },
+    //         ] as {
+    //           lonLat: [number, number];
+    //           timestamp: number;
+    //           color: string;
+    //         }[]
+    //     );
+    //   }
 
       if (speed !== velocity.speed || angle !== velocity.angle)
         setVelocity({
@@ -229,12 +229,12 @@ export function DroneMap({
           scale={1}
         />
       </RStyle.RStyle>
-      <RLayerVector zIndex={5}>
+      {/* <RLayerVector zIndex={5}>
         <RStyle.RStyle>
           <RStyle.RIcon src={droneBoxIcon} anchor={[0.5, 0.8]} scale={0.04} />
         </RStyle.RStyle>
         <RFeature geometry={new Point(fromLonLat(initialLonLat))}></RFeature>
-      </RLayerVector>
+      </RLayerVector> */}
       <RStyle.RStyle ref={velocityLineStyle}>
         <RStyle.RStroke color="black" width={2} />
       </RStyle.RStyle>
@@ -279,15 +279,15 @@ export function DroneMap({
                 placeItems: "center",
                 fontSize: "10px",
               }}>
-              <Typography
+              {/* <Typography
                 sx={{ cursor: "pointer" }}
                 onClick={() => setTrailPoints([])}>
                 {id}
-              </Typography>
+              </Typography> */}
             </Paper>
           </ROverlay>
 
-          <RPopup autoPan autoPosition ref={popupRef} trigger="click">
+          {/* <RPopup autoPan autoPosition ref={popupRef} trigger="click">
             <Paper
               sx={{
                 margin: "15px",
@@ -308,7 +308,6 @@ export function DroneMap({
               </div>
               <div style={{ marginTop: "10px" }}>
                 {" "}
-                {/* Adjust margin as needed */}
                 <KillButton
                   id={id}
                   initialLonLat={initialLonLat}
@@ -316,46 +315,46 @@ export function DroneMap({
                 />
               </div>
             </Paper>
-          </RPopup>
+          </RPopup> */}
         </RFeature>
       </RLayerVector>
-      {useMemo(
+      {/* {useMemo(
         () => (
           <TrailRenderer trailPoints={trailPoints} />
         ),
         [trailPoints]
-      )}
+      )} */}
     </>
   );
 }
 
-function TrailRenderer({
-  trailPoints,
-}: {
-  trailPoints: { lonLat: [number, number]; timestamp: number; color: string }[];
-}) {
-  return (
-    <RLayerVector zIndex={5}>
-      {trailPoints.map((point, index) => {
-        if (
-          trailPoints[trailPoints.length - 1]?.timestamp - point.timestamp <
-          TEN_MINUTES_IN_MS
-        ) {
-          return (
-            <RFeature
-              key={index}
-              geometry={new Point(fromLonLat(point.lonLat))}>
-              <RStyle.RStyle>
-                <RStyle.RCircle radius={5}>
-                  <RFill color={point.color} />
-                </RStyle.RCircle>
-              </RStyle.RStyle>
-            </RFeature>
-          );
-        } else {
-          return null;
-        }
-      })}
-    </RLayerVector>
-  );
-}
+// function TrailRenderer({
+//   trailPoints,
+// }: {
+//   trailPoints: { lonLat: [number, number]; timestamp: number; color: string }[];
+// }) {
+//   return (
+//     <RLayerVector zIndex={5}>
+//       {trailPoints.map((point, index) => {
+//         if (
+//           trailPoints[trailPoints.length - 1]?.timestamp - point.timestamp <
+//           TEN_MINUTES_IN_MS
+//         ) {
+//           return (
+//             <RFeature
+//               key={index}
+//               geometry={new Point(fromLonLat(point.lonLat))}>
+//               <RStyle.RStyle>
+//                 <RStyle.RCircle radius={5}>
+//                   <RFill color={point.color} />
+//                 </RStyle.RCircle>
+//               </RStyle.RStyle>
+//             </RFeature>
+//           );
+//         } else {
+//           return null;
+//         }
+//       })}
+//     </RLayerVector>
+//   );
+// }

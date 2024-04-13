@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Paper } from "@mui/material";
 import { NoKillZone } from "../types/payloads";
 import "ol/ol.css";
@@ -21,9 +21,6 @@ import { FODMapManager } from "./FODMapManager";
 import { DateTimeDisplay } from "./DateTimeDisplay";
 import AlertBar from "./AlertBar";
 import "./Map.css";
-import ActionMenu from "./ActionMenu";
-import { FODDataProvider } from "../contexts/FODDataContext";
-import { PhaseProvider } from "../contexts/PhaseContext";
 
 const centerPoint = [149.1615057, -35.3606176] as [number, number]; // [Longitude, Latitude]
 const center = fromLonLat(centerPoint);
@@ -89,7 +86,7 @@ export default function Simple({
         initial={view}
         view={[view, setView]}
         ref={mapRef}
-        onClick={useCallback(() => {}, [])}>
+        onClick={useCallback(() => { }, [])}>
         <RLayerTileWebGL url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" />
         <RLayerVector zIndex={10}>
           {noKillZones.map((zone, index) => (

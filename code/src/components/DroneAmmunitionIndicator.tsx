@@ -54,14 +54,6 @@ import WhatshotIcon from '@mui/icons-material/Whatshot';
 //     return ammunitionElement;
 // }
 
-
-
-
-
-
-
-
-
 // Showing Count Code
 
 function AmmunitionDetected({ ammo, count }: { ammo: string, count: string }) {

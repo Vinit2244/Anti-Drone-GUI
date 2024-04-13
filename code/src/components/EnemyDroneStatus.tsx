@@ -1,31 +1,16 @@
-import { useContext, useEffect, useState } from "react";
-import { emit, listen } from "@tauri-apps/api/event";
+import { useContext, useState } from "react";
 import {
   Box,
-  Card,
-  CardContent,
   Chip,
-  Modal,
   Stack,
   SvgIcon,
   Typography,
 } from "@mui/material";
 import { ReactComponent as DroneIcon } from "../assets/drone.svg";
-import DroneBatteryIndicator from "./DroneBatteryIndicator";
-import Checkbox from "@mui/material/Checkbox";
-import { PhaseContext } from "../contexts/PhaseContext";
 import { useSelector } from "@xstate/react";
-import Tooltip from "@mui/material/Tooltip";
-const DISCONNECT_INTERVAL = 5000; //ms
 import { selectColor } from "../colorCode";
 import { MapControlContext } from "../contexts/MapControlContext";
 import EnemyDroneGPSStatus from "./EnemyDroneGPSStatus";
-import { HeartbeatPayload, LandedStatePayload } from "../types/payloads";
-import { FLIGHT_MODES } from "../constants/flight_modes";
-import { invoke } from "@tauri-apps/api";
-import DronePortIndicator from "./DronePortIndicator";
-import DroneGroundRadarStrengthIndicator from "./DroneGroundRadarStrengthIndicator"
-import DroneAmmunitionIndicator from "./DroneAmmunitionIndicator"
 
 export function EnemyDroneStatus({ id }: { id: string }) {
   const [connected, setConnected] = useState(true);
@@ -43,8 +28,6 @@ export function EnemyDroneStatus({ id }: { id: string }) {
   };
   const setTimeoutHandler = useState<NodeJS.Timeout | undefined>(undefined)[1];
 
-
-
   const { mapControlService } = useContext(MapControlContext);
   const { send: mapControlSend } = mapControlService;
   const mapSelected = useSelector(
@@ -59,7 +42,7 @@ export function EnemyDroneStatus({ id }: { id: string }) {
       <Chip
         sx={{ height: "130px", width: "90%", margin: "auto" }}
         color={"success"}
-        // disabled={!connected}
+        disabled={!connected}
         variant="outlined"
         label={
           <Stack>
@@ -99,14 +82,14 @@ export function EnemyDroneStatus({ id }: { id: string }) {
                         borderColor: selectColor(+id),
                       }
                 }
-                onClick={() => {
-                  mapSelected
-                    ? mapControlSend("Deselect")
-                    : mapControlSend({
-                        type: "Select Drone",
-                        newSelectedDrone: id,
-                      });
-                }}
+                // onClick={() => {
+                //   mapSelected
+                //     ? mapControlSend("Deselect")
+                //     : mapControlSend({
+                //         type: "Select Drone",
+                //         newSelectedDrone: id,
+                //       });
+                // }}
                 label={
                   <Stack direction="row">
                     <SvgIcon component={DroneIcon} inheritViewBox />
