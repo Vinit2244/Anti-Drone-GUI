@@ -1,5 +1,6 @@
 import { Slider, Typography } from "@mui/material";
 import { useRef, useState } from "react";
+import { useState } from "react";
 
 export default function SliderButton({
   railText,
@@ -94,5 +95,41 @@ export default function SliderButton({
       onChange={handleSliderChange}
       sx={{ width: "100%", marginTop: "5px" }}
     />
+  );
+}
+
+export function SliderButton_Kill({
+  railText,
+  trackText,
+  onSubmit,
+  threshold = 85,
+  disabled = false,
+}: {
+  railText: string;
+  trackText: string;
+  onSubmit?: () => void;
+  threshold?: number;
+  disabled?: boolean;
+}) {
+  const [value, setValue] = useState(0);
+
+  const handleSliderChange = (event: Event, newValue: number | number[]) => {
+    setValue(newValue as number);
+    if (newValue === 100) {
+      onSubmit?.(); // Invoke onSubmit callback when slider is slid completely
+    }
+  };
+
+  return (
+    <div style={{ width: "100%", marginTop: "5px", padding: "0 10px" }}>
+      <Typography gutterBottom>{trackText}</Typography>
+      <Slider
+        disabled={disabled}
+        value={value}
+        onChange={handleSliderChange}
+        sx={{ width: "100%" }}
+      />
+      <Typography gutterBottom>{railText}</Typography>
+    </div>
   );
 }
