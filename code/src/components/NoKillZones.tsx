@@ -1,9 +1,7 @@
 import Typography from "@mui/material/Typography";
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
-import {
-  NoKillZone
-} from "../types/payloads";
+import { NoKillZone } from "../types/payloads";
 import { Box, Card, CardContent, CardHeader, IconButton } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { useImmer } from "use-immer";
@@ -55,15 +53,16 @@ function NoKillZoneCard({
             onClick={async () => {
               setUpdating(true);
               if (newZone)
-                await invoke("add_no_kill_zone", { newZone: updatedNoKillZone });
+                await invoke("add_no_kill_zone", {
+                  newZone: updatedNoKillZone,
+                });
               else
                 await invoke("update_no_kill_zone", {
                   index,
                   newZone: updatedNoKillZone,
                 });
               setUpdating(false);
-            }}
-          >
+            }}>
             <SaveIcon />
           </IconButton>
         }
@@ -75,8 +74,7 @@ function NoKillZoneCard({
             alignItems: "center",
             justifyContent: "space-between",
             marginTop: "20px",
-          }}
-        >
+          }}>
           <TextField
             type="number"
             label="Latitude"
@@ -126,7 +124,9 @@ export function NoKillZones({
   useEffect(() => {
     (async () => {
       try {
-        const newNoKillZones = (await invoke("get_no_kill_zones")) as NoKillZone[];
+        const newNoKillZones = (await invoke(
+          "get_no_kill_zones"
+        )) as NoKillZone[];
         setNoKillZones(newNoKillZones);
       } catch (e) {
         console.error(e);
@@ -158,17 +158,28 @@ export function NoKillZones({
       <Box sx={{ marginTop: "20px", marginBottom: "10px", float: "right" }}>
         <IconButton
           onClick={() => {
+            const newId =
+              Math.max(
+                ...noKillZones.map((zone) => {
+                  // Extract numeric part of the id and parse it to integer
+                  const idNum = zone.id
+                    ? parseInt((zone.id.match(/\d+/) || [])[0] || "0")
+                    : 0;
+                  return isNaN(idNum) ? 0 : idNum; // handle NaN if id doesn't contain numbers
+                }),
+                0
+              ) + 1;
             setNewNoKillZones((oldNoKillZones) => [
-              ...oldNoKillZones,{
-                id:"new",
+              ...oldNoKillZones,
+              {
+                id: "killzone" + newId.toString(),
                 name: "New No Kill Zone",
                 latitude: 0,
                 longitude: 0,
-                radius: 0}]
-
-            );
-          }}
-        >
+                radius: 0,
+              },
+            ]);
+          }}>
           <AddIcon />
         </IconButton>
       </Box>
