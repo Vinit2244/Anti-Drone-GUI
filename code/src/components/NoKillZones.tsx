@@ -120,6 +120,7 @@ export function NoKillZones({
 }) {
   const [noKillZones, setNoKillZones] = useState([] as NoKillZone[]);
   const [newNoKillZones, setNewNoKillZones] = useState([] as NoKillZone[]);
+  const [lastKillZoneId, setLastKillZoneId] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -128,11 +129,42 @@ export function NoKillZones({
           "get_no_kill_zones"
         )) as NoKillZone[];
         setNoKillZones(newNoKillZones);
+
+        // Calculate last no kill zone id
+        const maxId = Math.max(
+          ...newNoKillZones.map((zone) => {
+            // Extract numeric part of the id and parse it to integer
+            const idNum = zone.id
+              ? parseInt((zone.id.match(/\d+/) || [])[0] || "0")
+              : 0;
+            return isNaN(idNum) ? 0 : idNum; // handle NaN if id doesn't contain numbers
+          }),
+          0
+        );
+        console.log("no kill zone id on initial load", maxId);
+        setLastKillZoneId(maxId);
       } catch (e) {
         console.error(e);
       }
     })();
   }, []);
+
+  const handleAddKillZone = () => {
+    const newId = lastKillZoneId + 1;
+    console.log("new no kill zone id", newId);
+    setNewNoKillZones((oldNoKillZones) => [
+      ...oldNoKillZones,
+      {
+        id: "killzone" + newId.toString(),
+        name: "New No Kill Zone",
+        latitude: 0,
+        longitude: 0,
+        radius: 0,
+      },
+    ]);
+
+    setLastKillZoneId(newId);
+  };
 
   return (
     <>
@@ -156,30 +188,7 @@ export function NoKillZones({
         />
       ))}
       <Box sx={{ marginTop: "20px", marginBottom: "10px", float: "right" }}>
-        <IconButton
-          onClick={() => {
-            const newId =
-              Math.max(
-                ...noKillZones.map((zone) => {
-                  // Extract numeric part of the id and parse it to integer
-                  const idNum = zone.id
-                    ? parseInt((zone.id.match(/\d+/) || [])[0] || "0")
-                    : 0;
-                  return isNaN(idNum) ? 0 : idNum; // handle NaN if id doesn't contain numbers
-                }),
-                0
-              ) + 1;
-            setNewNoKillZones((oldNoKillZones) => [
-              ...oldNoKillZones,
-              {
-                id: "killzone" + newId.toString(),
-                name: "New No Kill Zone",
-                latitude: 0,
-                longitude: 0,
-                radius: 0,
-              },
-            ]);
-          }}>
+        <IconButton onClick={handleAddKillZone}>
           <AddIcon />
         </IconButton>
       </Box>

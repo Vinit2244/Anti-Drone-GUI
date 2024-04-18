@@ -5,6 +5,7 @@ use rusqlite::{params, Connection, Error, Result};
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 
+// Struct defining a No Kill Zone
 #[derive(Serialize, Deserialize, Debug)]
 pub struct NoKillZone {
     pub id: String,
@@ -26,12 +27,31 @@ impl Default for NoKillZone {
     }
 }
 
+// Implement Clone for NoKillZone
+// Needed because it creates a copy of the struct
+// used in updating
+impl Clone for NoKillZone {
+    fn clone(&self) -> Self {
+        NoKillZone {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            latitude: self.latitude,
+            longitude: self.longitude,
+            radius: self.radius,
+        }
+    }
+}
+
+// Struct defining a list of No Kill Zones
 #[derive(Serialize, Deserialize, Debug)]
 pub struct NoKillZones {
     pub zones: Vec<NoKillZone>,
 }
 
+// Functions for NoKillZones
 impl NoKillZones {
+    // Create the table for NoKillZones
+    // Only if it doesn't already exist
     pub fn create_table(conn: &Connection) -> Result<()> {
         conn.execute(
             "CREATE TABLE IF NOT EXISTS no_kill_zones (
@@ -46,15 +66,8 @@ impl NoKillZones {
         Ok(())
     }
 
-    // pub fn save(&self, path: &std::path::Path) -> Result<(), std::io::Error> {
-    //     let file = File::create(path)?;
-    //     serde_json::to_writer_pretty(file, &self)?;
-
-    //     Ok(())
-    // }
-
+    // Save the NoKillZones to the database
     pub fn save(&self, conn: &Connection) -> Result<(), Error> {
-        // conn.execute("DELETE FROM no_kill_zones", [])?;
         for zone in &self.zones {
             println!("Inserting: {:?}", zone);
             conn.execute(
@@ -65,22 +78,12 @@ impl NoKillZones {
         Ok(())
     }
 
-    // pub fn load(path: &std::path::Path) -> Result<Self, serde_json::Error> {
-    //     match File::open(path) {
-    //         Ok(file) => Ok(serde_json::from_reader(file)?),
-    //         Err(_) => {
-    //             let default_zones = NoKillZones {
-    //                 zones: vec![NoKillZone::default()],
-    //             };
-    //             let _ = default_zones.save(path);
-    //             Ok(default_zones)
-    //         }
-    //     }
-    // }
-
+    // Load the NoKillZones from the database
     pub fn load(conn: &Connection) -> Result<Self, Error> {
+        // Query statement
         let mut stmt =
             conn.prepare("SELECT id, name, latitude, longitude, radius FROM no_kill_zones")?;
+        // Execute the query over all rows
         let rows = stmt.query_map([], |row| {
             Ok(NoKillZone {
                 id: row.get(0)?,
@@ -90,7 +93,7 @@ impl NoKillZones {
                 radius: row.get(4)?,
             })
         })?;
-
+        // Collect the rows into a vector
         let mut zones = Vec::new();
         for zone in rows {
             zones.push(zone?);
@@ -99,8 +102,8 @@ impl NoKillZones {
         Ok(NoKillZones { zones })
     }
 
+    // Update the NoKillZones in the database using id as the key
     pub fn update(&self, conn: &Connection) -> Result<(), Error> {
-        // conn.execute("DELETE FROM no_kill_zones", [])?;
         for zone in &self.zones {
             conn.execute(
                 "UPDATE no_kill_zones SET name = ?2, latitude = ?3, longitude = ?4, radius = ?5 WHERE id = ?1",
@@ -111,16 +114,18 @@ impl NoKillZones {
     }
 }
 
+// Get the path to the No Kill Zones database
 pub fn get_zones_path(app: AppHandle) -> Option<std::path::PathBuf> {
     let mut config_dir_path = app.path_resolver().app_config_dir()?;
     match std::fs::create_dir_all(&config_dir_path) {
         Err(_) => return None,
         _ => {}
     };
-    config_dir_path.push(std::path::Path::new("zones.db"));
+    config_dir_path.push(std::path::Path::new("config.db")); // Used to store no kill zones and settings
     Some(config_dir_path)
 }
 
+// Create a connection to the No Kill Zones database
 pub fn establish_connection(db_file_path: &str) -> Option<Connection> {
     let conn = Connection::open(db_file_path).ok()?;
     NoKillZones::create_table(&conn).ok()?;
@@ -129,6 +134,8 @@ pub fn establish_connection(db_file_path: &str) -> Option<Connection> {
 
 #[tauri::command]
 pub async fn get_no_kill_zones(app: AppHandle) -> Result<Vec<NoKillZone>, String> {
+    // Retrieves a list of no-kill zones from the application, if available.
+    // If not available, returns an error message.
     let zones_path = match get_zones_path(app) {
         Some(p) => p,
         None => {
@@ -142,10 +149,7 @@ pub async fn get_no_kill_zones(app: AppHandle) -> Result<Vec<NoKillZone>, String
             return Err("Couldn't establish connection".into());
         }
     };
-    // match NoKillZones::load(&zones_path) {
-    //     Ok(zones) => Ok(zones.zones),
-    //     Err(e) => Err(e.to_string()),
-    // }
+
     match NoKillZones::load(&conn) {
         Ok(zones) => Ok(zones.zones),
         Err(e) => Err(e.to_string()),
@@ -154,6 +158,7 @@ pub async fn get_no_kill_zones(app: AppHandle) -> Result<Vec<NoKillZone>, String
 
 #[tauri::command]
 pub async fn add_no_kill_zone(app: AppHandle, new_zone: NoKillZone) {
+    // Adds a new kill zone to database
     println!("New: {:?}", new_zone);
     let zones_path = match get_zones_path(app) {
         Some(p) => p,
@@ -167,26 +172,13 @@ pub async fn add_no_kill_zone(app: AppHandle, new_zone: NoKillZone) {
             return;
         }
     };
-    // let mut zones = match NoKillZones::load(&zones_path) {
-    //     Ok(zones) => zones,
-    //     Err(_) => {
-    //         return;
-    //     }
-    // };
-    // let mut zones = match NoKillZones::load(&conn) {
-    //     Ok(zones) => zones,
-    //     Err(_) => {
-    //         return;
-    //     }
-    // };
+
     let zones = NoKillZones {
         zones: vec![new_zone],
     };
     // println!("Loaded: {:?}", zones);
-    // let _ = zones.save(&zones_path);
-    println!("Saving: {:?}", zones);
     let _ = zones.save(&conn);
-    println!("Saved: {:?}", zones);
+    // println!("Saved: {:?}", zones);
 }
 
 #[tauri::command]
@@ -204,23 +196,20 @@ pub async fn update_no_kill_zone(app: AppHandle, new_zone: NoKillZone) {
             return;
         }
     };
-    // let mut zones = match NoKillZones::load(&zones_path) {
-    //     Ok(zones) => zones,
-    //     Err(_) => {
-    //         return;
-    //     }
-    // };
+
     let mut zones = match NoKillZones::load(&conn) {
         Ok(zones) => zones,
         Err(_) => {
             return;
         }
     };
+    // Check if the zone exists
     let mut found = false;
     for zone in &mut zones.zones {
         if zone.id == new_zone.id {
-            *zone = new_zone;
+            *zone = new_zone.clone();
             found = true;
+            println!("Zone found");
             break;
         }
     }
@@ -228,7 +217,11 @@ pub async fn update_no_kill_zone(app: AppHandle, new_zone: NoKillZone) {
         println!("Zone not found");
         return;
     }
-    println!("Found: {:?}", zones);
-    let _ = zones.update(&conn);
-    println!("Updated: {:?}", zones);
+
+    // Only update the zone that was found
+    let zone_to_update = NoKillZones {
+        zones: vec![new_zone.clone()],
+    };
+    let _ = zone_to_update.update(&conn);
+    println!("Updated: {:?}", zone_to_update);
 }
