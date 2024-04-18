@@ -115,9 +115,9 @@ export default function Simple({
             <DateTimeDisplay />
           </Paper>
         </RControl.RCustom>
-        <OnlyConnected>
+        {/* <OnlyConnected> */}
           <DronesMapManager mapRef={mapRef} noKillZones={noKillZones} />
-        </OnlyConnected>
+        {/* </OnlyConnected> */}
         <FODMapManager />
       </RMap>
       <AlertBar

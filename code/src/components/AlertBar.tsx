@@ -114,7 +114,3 @@ function AlertBar({ toggleGraticule, toggleTheme, toggleFullScreenMap }: { toggl
 }
 
 export default AlertBar;
-
-
-
-
