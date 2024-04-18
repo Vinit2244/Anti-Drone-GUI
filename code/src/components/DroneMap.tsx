@@ -84,16 +84,15 @@ const MIN_PATH_TRAIL_DISTANCE: number = 10;
 const TEN_MINUTES_IN_MS = 1 * 60 * 1000; // For now set to 1 minute, change when required
 
 function getColorBasedOnAltitude(altitude: number): string {
-  const MAX_ALTITUDE = 200;
-
-  // Normalize altitude to a value between 0 and 1
-  const normalizedAltitude = altitude / MAX_ALTITUDE;
-
-  // Interpolate between red (low altitude) and green (high altitude)
-  const red = Math.round((1 - normalizedAltitude) * 255);
-  const green = Math.round(normalizedAltitude * 255);
-
-  return `rgb(${red}, ${green}, 0)`;
+  if (altitude <= 15) {
+    return "rgb(255, 0, 0)";
+  }
+  else if (altitude <= 45) {
+    return "rgb(204, 250, 105)";
+  }
+  else {
+    return "rgb(0, 255, 0)";
+  }
 }
 
 export function DroneMap({
