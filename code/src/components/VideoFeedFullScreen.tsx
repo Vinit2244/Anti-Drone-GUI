@@ -4,6 +4,8 @@
 import WorldMap from '../assets/world_map.jpeg'
 import Tooltip from '@mui/material/Tooltip';
 import  { useEffect, useRef } from "react";
+import { MapControlProvider } from "../contexts/MapControlContext";
+import Map from "./Map";
 
 export default function VidoeFeedButtonFullScreen({ cName, handleClick }: { cName: string; handleClick: () => void }) {
 
@@ -51,6 +53,7 @@ export default function VidoeFeedButtonFullScreen({ cName, handleClick }: { cNam
 
 
   return (
+    <MapControlProvider>
     <div className={cName}>
 
       <video
@@ -64,18 +67,16 @@ export default function VidoeFeedButtonFullScreen({ cName, handleClick }: { cNam
             />
       <Tooltip title="Click to View Map in full screen" placement="bottom-end">
       <button className="videoFeedButtonToShowMap" onClick={handleClick} color="inherit" style={{borderRadius: "50%"}}>
-        <img
-          src={WorldMap}
-          style={{
-            width: "200px",
-            height: "200px",
-            objectFit: "cover",
-            borderRadius: "50%",
-          }}
-          alt="animated icon"
+
+        <Map
+        toggleTheme={() => {}}
+        cName="mapWrapper-circle"
+        toggleFullScreenMap={() => {}}
         />
+
       </button>
       </Tooltip>
     </div>
+  </MapControlProvider>
     );
 }

@@ -7,6 +7,7 @@ import { EnemyDroneStatus } from "./EnemyDroneStatus"
 import { VitalStatus } from "./VitalStatus"
 import { AmmunitionStatus } from "./AmmunitionStatus"
 import { PhaseContext } from "../contexts/PhaseContext";
+import { EnemyDroneContext } from "../contexts/EnemyDroneFound";
 import { useSelector } from "@xstate/react";
 import IconButton from "@mui/material/IconButton";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -18,10 +19,11 @@ export function DronesStatus() {
    *  Component displaying friendly drone's status on sidebar
    */
   const [droneIDs, setDroneIDs] = useState([] as string[]);
+  const { isEnemyDronePresent, setEnemyDronePresent } = useContext(EnemyDroneContext);
 
   // hard coded
   // const [droneIDs, setDroneIDs] = useState(["1", "2"] as string[]);
- 
+
   useEffect(() => {
     const promise = listen("heartbeat", (event) => {
       const id = (event.payload as { system_id: string }).system_id;
@@ -55,6 +57,16 @@ export function DronesStatus() {
   const rogueDroneIDs = droneIDs.filter(
     (id) => IsEnemyDrone(+id) && +id != 255
   );
+
+  if(rogueDroneIDs.length > 0){
+    setEnemyDronePresent(true);
+    // console.log(isEnemyDronePresent);
+  }
+  else{
+    setEnemyDronePresent(false);
+  }
+
+  console.log(isEnemyDronePresent);
 
   return (
     <Box width="100%" height="100%">

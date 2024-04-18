@@ -60,12 +60,12 @@ export default function VidoeFeedButton({cName, handleClick} : {cName: string; h
               draggable={false}
               loop
               controls={false} // Hides the default video controls
-            //   style={{
-            //     width: "200px",
-            //     height: "200px",
-            //     objectFit: "cover",
-            //     borderRadius: "50%",
-            // }}
+              style={{
+                width: "200px",
+                height: "200px",
+                objectFit: "cover",
+                borderRadius: "50%",
+            }}
             />
         </button>
         </Tooltip>

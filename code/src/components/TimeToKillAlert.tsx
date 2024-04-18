@@ -6,7 +6,7 @@ import ScheduleSharpIcon from '@mui/icons-material/ScheduleSharp';
 
 function TimeToKillSnackbar({cName} : {cName: string}) {
   const [timeLeft, setTimeLeft] = useState(0);
-  const timerDuration = 5;
+  const timerDuration = 50;
   const [startTime, setStartTime] = useState(Date.now());
   const [open, setOpen] = useState(true);
 

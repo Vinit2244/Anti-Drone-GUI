@@ -16,6 +16,7 @@ import { FODDataProvider } from "./contexts/FODDataContext";
 import VideoFeedButton from "./components/VideoFeed";
 import VideoFeedButtonFullScreen from "./components/VideoFeedFullScreen";
 import TimeToKillSnackbar from "./components/TimeToKillAlert";
+import { EnemyDroneContext } from "./contexts/EnemyDroneFound";
 
 const darkTheme = createTheme({
   palette: {
@@ -33,6 +34,7 @@ function App() {
   const [currentTheme, setCurrentTheme] = useState(darkTheme);
   const [fullScreenMap, setFullScreenMap] = useState(false);
   const [showMap, setShowMap] = useState(true);
+  const [ isEnemyDronePresent ,setEnemyDronePresent] = useState(false);
 
   const toggleTheme = () => {
     setCurrentTheme((prevTheme) =>
@@ -55,7 +57,15 @@ function App() {
         <PhaseProvider>
           <MapControlProvider>
             <FODDataProvider>
+            <EnemyDroneContext.Provider value={{ isEnemyDronePresent, setEnemyDronePresent }}>
               <div className="appContainer">
+              {isEnemyDronePresent && (
+                  fullScreenMap ? (
+                    <TimeToKillSnackbar cName="timeToKillSnackbarFull" />
+                  ) : (
+                    <TimeToKillSnackbar cName="timeToKillSnackbar" />
+                  )
+                )}
                 {fullScreenMap ?
                 <TimeToKillSnackbar cName="timeToKillSnackbarFull"/>
                 :
@@ -110,6 +120,7 @@ function App() {
                   <MissionControl cName="missionControl-right" />
                 )}
               </div>
+              </EnemyDroneContext.Provider>
             </FODDataProvider>
           </MapControlProvider>
         </PhaseProvider>
