@@ -1,6 +1,6 @@
 import { Slider, Typography } from "@mui/material";
 import { useRef, useState } from "react";
-import { useState } from "react";
+// import { useState } from "react";
 
 export default function SliderButton({
   railText,
@@ -43,21 +43,22 @@ export default function SliderButton({
             );
           },
           style: {
-            width: "20%",
+            width: "10%",
             borderRadius: "16px",
-            height: "35px",
+            height: "50px",
           },
         },
         track: {
           style: {
-            height: "30px",
+            // width: "200px",
+            height: "50px",
             borderRadius: "16px",
           },
           children: (
             <Typography
               style={{
                 height: "100%",
-                color: "black",
+                color: "white",
                 textAlign: "center",
                 display: "flex",
                 justifyContent: "center",
@@ -72,7 +73,8 @@ export default function SliderButton({
         },
         rail: {
           style: {
-            height: "40px",
+            // width: "200px",
+            height: "60px",
             borderRadius: "16px",
           },
           children: (
@@ -93,43 +95,43 @@ export default function SliderButton({
       }}
       value={value}
       onChange={handleSliderChange}
-      sx={{ width: "100%", marginTop: "5px" }}
+      sx={{ width: "50%", marginTop: "5px" }}
     />
   );
 }
 
-export function SliderButton_Kill({
-  railText,
-  trackText,
-  onSubmit,
-  threshold = 85,
-  disabled = false,
-}: {
-  railText: string;
-  trackText: string;
-  onSubmit?: () => void;
-  threshold?: number;
-  disabled?: boolean;
-}) {
-  const [value, setValue] = useState(0);
+// export function SliderButton_Kill({
+//   railText,
+//   trackText,
+//   onSubmit,
+//   threshold = 85,
+//   disabled = false,
+// }: {
+//   railText: string;
+//   trackText: string;
+//   onSubmit?: () => void;
+//   threshold?: number;
+//   disabled?: boolean;
+// }) {
+//   const [value, setValue] = useState(0);
 
-  const handleSliderChange = (event: Event, newValue: number | number[]) => {
-    setValue(newValue as number);
-    if (newValue === 100) {
-      onSubmit?.(); // Invoke onSubmit callback when slider is slid completely
-    }
-  };
+//   const handleSliderChange = (event: Event, newValue: number | number[]) => {
+//     setValue(newValue as number);
+//     if (newValue === 100) {
+//       onSubmit?.(); // Invoke onSubmit callback when slider is slid completely
+//     }
+//   };
 
-  return (
-    <div style={{ width: "100%", marginTop: "5px", padding: "0 10px" }}>
-      <Typography gutterBottom>{trackText}</Typography>
-      <Slider
-        disabled={disabled}
-        value={value}
-        onChange={handleSliderChange}
-        sx={{ width: "100%" }}
-      />
-      <Typography gutterBottom>{railText}</Typography>
-    </div>
-  );
-}
+//   return (
+//     <div style={{ width: "10%", marginTop: "5px", padding: "0 10px" }}>
+//       <Typography gutterBottom>{trackText}</Typography>
+//       <Slider
+//         disabled={disabled}
+//         value={value}
+//         onChange={handleSliderChange}
+//         sx={{ width: "100%" }}
+//       />
+//       <Typography gutterBottom>{railText}</Typography>
+//     </div>
+//   );
+// }
