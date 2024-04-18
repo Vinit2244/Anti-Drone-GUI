@@ -4,6 +4,7 @@ import { PhaseContext } from "../contexts/PhaseContext";
 import { useSelector } from "@xstate/react";
 import { FODDataContext } from "../contexts/FODDataContext";
 import { invoke } from "@tauri-apps/api";
+import SliderButton from "./SliderButton";
 
 function TakeoffButton() {
   const phaseServices = useContext(PhaseContext);
@@ -290,6 +291,10 @@ export function MissionControl({ cName }: { cName: string }) {
             Button 8
           </LooperButton>
 
+        {/* <div>
+          <SliderButton railText="rail" trackText="track" onSubmit={ResumeButton}></SliderButton>
+        </div> */}
+
           {/* <ShowTakeoff>
             <TakeoffButton />
           </ShowTakeoff>
@@ -456,6 +461,55 @@ export function MissionControl({ cName }: { cName: string }) {
           </Button> */}
         </div>
       </Paper>
+      <Paper
+        className={cName}
+        style={{
+          borderTop: "solid",
+          overflow: "scroll",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "5px 0 120px 0",
+          }}
+        >
+          <Typography variant="h6" color="secondary">
+            Mission Control
+          </Typography>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 7,
+          }}
+        >
+          {/* <LooperButton
+            delay={0}
+            cancelChildren={"Stop Abort"}
+            onPress={async () => {
+              try {
+                return true;
+              } catch (e) {
+                console.error(e);
+                return false;
+              }
+            }}
+          >
+            Abort
+          </LooperButton> */}
+          {/* <div> */}
+            <SliderButton railText="Slide To Confirm Kill" trackText="KILL" onSubmit={ResumeButton}></SliderButton>
+           {/* </div> */}
+
+        </div>
+      </Paper>
+
     </>
   );
 }
