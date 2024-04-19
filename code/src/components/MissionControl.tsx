@@ -91,14 +91,18 @@ function LooperButton({
   cancelChildren,
   onPress,
   delay,
+  setShowSliderButton
 }: PropsWithChildren<{
   onPress: () => boolean | Promise<boolean>;
   delay: number;
   cancelChildren: React.ReactNode;
+  setShowSliderButton: (value: boolean) => void;
 }>) {
   const [active, setActive] = useState(false);
+  // const [showSliderButton, setShowSliderButton] = useState(false);
   const [ticker, setTicker] = useState(false);
   const [otherComponentClass, setOtherComponentClass] = useState("");
+
   useEffect(() => {
     if (!active) return;
     (async () => {
@@ -107,21 +111,34 @@ function LooperButton({
         return;
       }
       await new Promise((resolve) => setTimeout(resolve, delay));
+      // setShowSliderButton(true);
       setTicker((ticker) => !ticker);
     })();
   }, [ticker, active]);
   return active ? (
-    <Button variant="contained" onClick={() => setActive(false)}>
+    <Button variant="contained" 
+    onClick={() => {
+      setActive(false); 
+      console.log("pressed");
+      setShowSliderButton(false);
+    }}>
       {cancelChildren}
     </Button>
   ) : (
-    <Button variant="outlined" onClick={() => setActive(true)}>
+    <Button variant="outlined" 
+    onClick={() => {
+      setActive(true); 
+      console.log("pressed");
+      setShowSliderButton(true);
+    }}>
       {children}
     </Button>
   );
 }
 
 export function MissionControl({ cName }: { cName: string }) {
+  const [showSliderButton, setShowSliderButton] = useState(false);
+  const [showButton, alwaysFalse] = useState(false);
   const phaseServices = useContext(PhaseContext);
   const { send } = phaseServices.phaseService;
   const { fodDataService } = useContext(FODDataContext);
@@ -171,6 +188,8 @@ export function MissionControl({ cName }: { cName: string }) {
                 return false;
               }
             }}
+            setShowSliderButton={alwaysFalse}
+
           >
             Abort
           </LooperButton>
@@ -186,6 +205,8 @@ export function MissionControl({ cName }: { cName: string }) {
                 return false;
               }
             }}
+            setShowSliderButton={alwaysFalse}
+
           >
             Follow Drone
           </LooperButton>
@@ -201,6 +222,8 @@ export function MissionControl({ cName }: { cName: string }) {
                 return false;
               }
             }}
+            setShowSliderButton={alwaysFalse}
+
           >
             No Kill Follow
           </LooperButton>
@@ -216,6 +239,8 @@ export function MissionControl({ cName }: { cName: string }) {
                 return false;
               }
             }}
+            setShowSliderButton={alwaysFalse}
+
           >
             Scan
           </LooperButton>
@@ -242,6 +267,8 @@ export function MissionControl({ cName }: { cName: string }) {
                 return false;
               }
             }}
+            setShowSliderButton={alwaysFalse}
+
           >
             RTH
           </LooperButton>
@@ -257,6 +284,7 @@ export function MissionControl({ cName }: { cName: string }) {
                 return false;
               }
             }}
+            setShowSliderButton={alwaysFalse}
           >
             Button 6
           </LooperButton>
@@ -272,13 +300,14 @@ export function MissionControl({ cName }: { cName: string }) {
                 return false;
               }
             }}
+            setShowSliderButton={alwaysFalse}
           >
             Button 7
           </LooperButton>
 
           <LooperButton
             delay={0}
-            cancelChildren={"Stop Button 8"}
+            cancelChildren={"Stop Launch"}
             onPress={async () => {
               try {
                 return true;
@@ -287,8 +316,10 @@ export function MissionControl({ cName }: { cName: string }) {
                 return false;
               }
             }}
+            setShowSliderButton={setShowSliderButton}
           >
-            Button 8
+            Send Launch
+
           </LooperButton>
 
         {/* <div>
@@ -504,7 +535,8 @@ export function MissionControl({ cName }: { cName: string }) {
             Abort
           </LooperButton> */}
           {/* <div> */}
-            <SliderButton railText="Slide To Confirm Kill" trackText="KILL" onSubmit={ResumeButton}></SliderButton>
+          { showSliderButton && (
+            <SliderButton railText="Slide To Confirm Kill" trackText="KILL" disabled={!showSliderButton} onSubmit={ResumeButton}/>)}
            {/* </div> */}
 
         </div>
