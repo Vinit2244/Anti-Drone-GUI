@@ -7,6 +7,7 @@ import { isNotInNoKillZone } from "./IsNotInNoKillZone";
 import { NoKillZone } from "../types/payloads";
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api";
+import { DroneMap } from "./DroneMap";
 
 export function KillButton({
   id,
@@ -23,6 +24,13 @@ export function KillButton({
   const enemyDrone = true;
   const notInNoKillZone = isNotInNoKillZone(initialLonLat, noKillZones);
   const [hovered, setHovered] = useState(false);
+  const [killButtonClicked, setKillButtonClicked] = useState(false);
+  
+  const handleKillButtonClick = () => {
+    if (notInNoKillZone) {
+      setKillButtonClicked(true);
+    }
+  };
 
   let buttonText = "";
 
@@ -40,15 +48,9 @@ export function KillButton({
     }
   }
 
-  const handleClick = () => {
-    if (notInNoKillZone) {
-      invoke("kill_drone", { id: +id });
-    }
-  };
-
   return (
     <Button
-      onClick={handleClick}
+      onClick={handleKillButtonClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       sx={{
