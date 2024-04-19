@@ -33,6 +33,10 @@ import { NoKillZone } from "../types/payloads";
 import { toLonLat } from "ol/proj";
 import { IsEnemyDrone } from "./IsEnemyDrone";
 import { KillButton } from "./KillButton";
+import SliderButton  from "./SliderButton";
+import { invoke } from "@tauri-apps/api";
+import { isNotInNoKillZone } from "./IsNotInNoKillZone";
+
 
 function magnitude(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
@@ -112,6 +116,17 @@ export function DroneMap({
   mapRef: RefObject<RMap>;
   noKillZones: NoKillZone[];
 }) {
+  // kill button start
+  const [killButtonClicked, setKillButtonClicked] = useState(false);
+  const notInNoKillZone = isNotInNoKillZone(initialLonLat, noKillZones);
+
+  const onKillButtonClick = () => {
+    if (notInNoKillZone) {
+      invoke("kill_drone", { id: +id });
+    }
+  }
+  // kill button end
+
   const [lonLat, setLonLat] = useState(initialLonLat);
   const [velocity, setVelocity] = useState(initialVelocity);
   const [velocityZ, setVelocityZ] = useState(initialVz);
@@ -236,34 +251,11 @@ export function DroneMap({
           scale={1}
         />
       </RStyle.RStyle>
-      {/* <RLayerVector zIndex={5}>
-        <RStyle.RStyle>
-          <RStyle.RIcon src={droneBoxIcon} anchor={[0.5, 0.8]} scale={0.04} />
-        </RStyle.RStyle>
-        <RFeature geometry={new Point(fromLonLat(initialLonLat))}></RFeature>
-      </RLayerVector> */}
+
       <RStyle.RStyle ref={velocityLineStyle}>
         <RStyle.RStroke color="black" width={2} />
       </RStyle.RStyle>
-      {/* <RLayerVector zIndex={10}>
-        <RFeature geometry={new Point(fromLonLat(initialLonLat))}>
-          <ROverlay className="no-interaction">
-            <img
-              src={droneBoxIcon}
-              style={{
-                position: "relative",
-                top: -24,
-                left: -24,
-                userSelect: "none",
-                pointerEvents: "none",
-              }}
-              width={48}
-              height={48}
-              alt="animated icon"
-            />
-          </ROverlay>
-        </RFeature>
-      </RLayerVector> */}
+      
       <RLayerVector
         style={isSelected ? selectedStyle : deselectedStyle}
         /* @ts-ignore */
@@ -320,7 +312,17 @@ export function DroneMap({
                   id={id}
                   initialLonLat={initialLonLat}
                   noKillZones={noKillZones}
+                  setKillButtonClicked={setKillButtonClicked} // added new prop for state of kill button click
                 />
+                
+                {killButtonClicked && (
+                <SliderButton
+                  railText="Slide to Confirm Kill"
+                  trackText="KILL"
+                  disabled={!killButtonClicked}
+                  onSubmit={onKillButtonClick}
+                />
+                )}
               </div>
             </Paper>
           </RPopup>
