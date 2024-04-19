@@ -116,21 +116,21 @@ function LooperButton({
     })();
   }, [ticker, active]);
   return active ? (
-    <Button variant="contained" 
-    onClick={() => {
-      setActive(false); 
-      console.log("pressed");
-      setShowSliderButton(false);
-    }}>
+    <Button variant="contained"
+      onClick={() => {
+        setActive(false);
+        console.log("pressed");
+        setShowSliderButton(false);
+      }}>
       {cancelChildren}
     </Button>
   ) : (
-    <Button variant="outlined" 
-    onClick={() => {
-      setActive(true); 
-      console.log("pressed");
-      setShowSliderButton(true);
-    }}>
+    <Button variant="outlined"
+      onClick={() => {
+        setActive(true);
+        console.log("pressed");
+        setShowSliderButton(true);
+      }}>
       {children}
     </Button>
   );
@@ -147,6 +147,17 @@ export function MissionControl({ cName }: { cName: string }) {
     phaseServices.phaseService,
     (state) => state.context.selectedIDs
   );
+  const sendLaunch = async () => {
+    sendFOD("Start Mission");
+    try {
+      await invoke("launch");
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  };
+
   return (
     <>
       <Paper
@@ -305,7 +316,7 @@ export function MissionControl({ cName }: { cName: string }) {
             Button 7
           </LooperButton>
 
-          <LooperButton
+          {/* <LooperButton
             delay={0}
             cancelChildren={"Stop Launch"}
             onPress={async () => {
@@ -320,11 +331,7 @@ export function MissionControl({ cName }: { cName: string }) {
           >
             Send Launch
 
-          </LooperButton>
-
-        {/* <div>
-          <SliderButton railText="rail" trackText="track" onSubmit={ResumeButton}></SliderButton>
-        </div> */}
+          </LooperButton> */}
 
           {/* <ShowTakeoff>
             <TakeoffButton />
@@ -338,22 +345,21 @@ export function MissionControl({ cName }: { cName: string }) {
           <ShowEmergencyClear>
             <EmergencyClearButton />
           </ShowEmergencyClear> */}
-          {/* <LooperButton
+          <LooperButton
             delay={200}
             cancelChildren={"Stop Sending Launch"}
             onPress={async () => {
-              sendFOD("Start Mission");
               try {
-                await invoke("launch");
                 return true;
               } catch (e) {
                 console.error(e);
                 return false;
               }
             }}
+            setShowSliderButton={setShowSliderButton}
           >
             Send Launch
-          </LooperButton> */}
+          </LooperButton>
           {/* <LooperButton
             delay={200}
             cancelChildren={"Stop Sending Land"}
@@ -520,25 +526,8 @@ export function MissionControl({ cName }: { cName: string }) {
             gap: 7,
           }}
         >
-          {/* <LooperButton
-            delay={0}
-            cancelChildren={"Stop Abort"}
-            onPress={async () => {
-              try {
-                return true;
-              } catch (e) {
-                console.error(e);
-                return false;
-              }
-            }}
-          >
-            Abort
-          </LooperButton> */}
-          {/* <div> */}
-          { showSliderButton && (
-            <SliderButton railText="Slide To Confirm Kill" trackText="KILL" disabled={!showSliderButton} onSubmit={ResumeButton}/>)}
-           {/* </div> */}
-
+          {showSliderButton && (
+            <SliderButton railText="Slide to confirm launch" trackText="LAUNCH" disabled={!showSliderButton} onSubmit={sendLaunch} />)}
         </div>
       </Paper>
 
