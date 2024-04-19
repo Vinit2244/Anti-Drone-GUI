@@ -2,14 +2,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use fod_watcher::MissionFODSession;
-use mavlink::ardupilotmega::{
-    MavLandedState,
-    MavMessage,
-    MavState,
-};
+use mavlink::ardupilotmega::{MavLandedState, MavMessage, MavState};
 use mavlink::error::MessageReadError;
 use mavlink::MavHeader;
 
+use rusqlite::Connection;
 use settings::CommLink;
 use std::error::Error;
 use std::sync::{Mutex, MutexGuard, RwLock};
@@ -29,25 +26,25 @@ mod settings;
 pub mod usb_serial;
 
 const MAV_SYS_STATUS_SENSOR_3D_GYRO: u32 = 1;
-const MAV_SYS_STATUS_SENSOR_3D_ACCEL:u32 = 2;
-const MAV_SYS_STATUS_SENSOR_3D_MAG:u32 = 4;
-const MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE:u32 = 8;
-const MAV_SYS_STATUS_SENSOR_GPS:u32 = 32;
-const MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL:u32 = 1024;
-const MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION:u32 = 2048;
-const MAV_SYS_STATUS_SENSOR_YAW_POSITION:u32 = 4096;
-const MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL:u32 = 8192;
-const MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL:u32 = 16384;
-const MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS:u32 = 32768;
-const MAV_SYS_STATUS_SENSOR_RC_RECEIVER:u32 = 65536;
-const MAV_SYS_STATUS_GEOFENCE:u32 = 1048576;
-const MAV_SYS_STATUS_AHRS:u32 = 2097152;
-const MAV_SYS_STATUS_TERRAIN:u32 = 4194304;
-const MAV_SYS_STATUS_LOGGING:u32 = 16777216;
-const MAV_SYS_STATUS_SENSOR_BATTERY:u32 = 33554432;
-const MAV_SYS_STATUS_SENSOR_PROXIMITY:u32 = 67108864;
-const MAV_SYS_STATUS_PRE_ARM_CHECK:u32 = 268435456;
-const MAV_SYS_STATUS_SENSOR_PROPULSION:u32 = 1073741824;
+const MAV_SYS_STATUS_SENSOR_3D_ACCEL: u32 = 2;
+const MAV_SYS_STATUS_SENSOR_3D_MAG: u32 = 4;
+const MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE: u32 = 8;
+const MAV_SYS_STATUS_SENSOR_GPS: u32 = 32;
+const MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL: u32 = 1024;
+const MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION: u32 = 2048;
+const MAV_SYS_STATUS_SENSOR_YAW_POSITION: u32 = 4096;
+const MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL: u32 = 8192;
+const MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL: u32 = 16384;
+const MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS: u32 = 32768;
+const MAV_SYS_STATUS_SENSOR_RC_RECEIVER: u32 = 65536;
+const MAV_SYS_STATUS_GEOFENCE: u32 = 1048576;
+const MAV_SYS_STATUS_AHRS: u32 = 2097152;
+const MAV_SYS_STATUS_TERRAIN: u32 = 4194304;
+const MAV_SYS_STATUS_LOGGING: u32 = 16777216;
+const MAV_SYS_STATUS_SENSOR_BATTERY: u32 = 33554432;
+const MAV_SYS_STATUS_SENSOR_PROXIMITY: u32 = 67108864;
+const MAV_SYS_STATUS_PRE_ARM_CHECK: u32 = 268435456;
+const MAV_SYS_STATUS_SENSOR_PROPULSION: u32 = 1073741824;
 
 #[derive(Clone, serde::Serialize)]
 struct PortNumber {
@@ -213,7 +210,11 @@ fn init_anti_drone_connection(
             return Err("Couldn't load settings".into());
         }
     };
-    let settings = settings::Settings::load(&settings_path)?;
+    let conn = match Connection::open(settings_path) {
+        Ok(conn) => conn,
+        Err(_) => return Err("Couldn't establish connection".into()),
+    };
+    let settings = settings::Settings::load(&conn)?;
     let connect_links: Vec<&CommLink> = settings
         .connection_settings
         .comm_links
@@ -227,6 +228,7 @@ fn init_anti_drone_connection(
         Box<dyn mavlink::MavConnection<MavMessage> + Send + Sync>,
         String,
     )> = None;
+
     for link in connect_links {
         let config_str = match link.comm_link_type.to_config_str() {
             Some(c) => c,
@@ -306,47 +308,60 @@ fn init_anti_drone_connection(
                             };
 
                             // Check Pre-Arm Check status
-                            let pre_arm_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_PRE_ARM_CHECK;
+                            let pre_arm_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_PRE_ARM_CHECK;
                             if pre_arm_status != 0 {
                                 // println!("Pre-Arm Check status: OK");
-                                app.emit_all("pre_arm_check_status_ok", payload.clone()).unwrap();
+                                app.emit_all("pre_arm_check_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Pre-Arm Check status: Error");
-                                app.emit_all("pre_arm_check_status_error", payload.clone()).unwrap();
+                                app.emit_all("pre_arm_check_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check gyro health
-                            let gyro_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_3D_GYRO;
+                            let gyro_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_3D_GYRO;
                             if gyro_status != 0 {
                                 // println!("Gyroscope status: OK");
-                                app.emit_all("gyroscope_status_ok",payload.clone()).unwrap();
+                                app.emit_all("gyroscope_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Gyroscope status: Error");
-                                app.emit_all("gyroscope_status_error",payload.clone()).unwrap();
+                                app.emit_all("gyroscope_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check accelerometer health
-                            let accel_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_3D_ACCEL;
+                            let accel_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_3D_ACCEL;
                             if accel_status != 0 {
                                 // println!("Accelerometer status: OK");
-                                app.emit_all("accelerometer_status_ok",payload.clone()).unwrap();
+                                app.emit_all("accelerometer_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Accelerometer status: Error");
-                                app.emit_all("accelerometer_status_error",payload.clone()).unwrap();
+                                app.emit_all("accelerometer_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check Magnetometer health
-                            let mag_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_3D_MAG;
+                            let mag_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_3D_MAG;
                             if mag_status != 0 {
                                 // println!("Magnetometer status: OK");
-                                app.emit_all("magnetometer_status_ok", payload.clone()).unwrap();
+                                app.emit_all("magnetometer_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Magnetometer status: Error");
-                                app.emit_all("magnetometer_status_error", payload.clone()).unwrap();
+                                app.emit_all("magnetometer_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check Absolute Pressure status
-                            let gps_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_GPS;
+                            let gps_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_GPS;
                             if gps_status != 0 {
                                 // println!("Absolute Pressure status: OK");
                                 app.emit_all("gps_ok", payload.clone()).unwrap();
@@ -356,87 +371,118 @@ fn init_anti_drone_connection(
                             }
 
                             // Check Absolute Pressure status
-                            let abs_pressure_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE;
+                            let abs_pressure_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE;
                             if abs_pressure_status != 0 {
                                 // println!("Absolute Pressure status: OK");
-                                app.emit_all("absolute_pressure_status_ok", payload.clone()).unwrap();
+                                app.emit_all("absolute_pressure_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Absolute Pressure status: Error");
-                                app.emit_all("absolute_pressure_status_error", payload.clone()).unwrap();
+                                app.emit_all("absolute_pressure_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check Angular Rate Control status
-                            let angular_rate_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL;
+                            let angular_rate_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL;
                             if angular_rate_status != 0 {
                                 // println!("Angular Rate Control status: OK");
-                                app.emit_all("angular_rate_control_status_ok", payload.clone()).unwrap();
+                                app.emit_all("angular_rate_control_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Angular Rate Control status: Error");
-                                app.emit_all("angular_rate_control_status_error", payload.clone()).unwrap();
+                                app.emit_all("angular_rate_control_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check Altitude Stabilization status
-                            let altitude_stabilization_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION;
+                            let altitude_stabilization_status =
+                                data.onboard_control_sensors_health.bits()
+                                    & MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION;
                             if altitude_stabilization_status != 0 {
                                 // println!("Altitude Stabilization status: OK");
-                                app.emit_all("altitude_stabilization_status_ok", payload.clone()).unwrap();
+                                app.emit_all("altitude_stabilization_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Altitude Stabilization status: Error");
-                                app.emit_all("altitude_stabilization_status_error", payload.clone()).unwrap();
+                                app.emit_all(
+                                    "altitude_stabilization_status_error",
+                                    payload.clone(),
+                                )
+                                .unwrap();
                             }
 
                             // Check Yaw Position status
-                            let yaw_position_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_YAW_POSITION;
+                            let yaw_position_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_YAW_POSITION;
                             if yaw_position_status != 0 {
                                 // println!("Yaw Position status: OK");
-                                app.emit_all("yaw_position_status_ok", payload.clone()).unwrap();
+                                app.emit_all("yaw_position_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Yaw Position status: Error");
-                                app.emit_all("yaw_position_status_error", payload.clone()).unwrap();
+                                app.emit_all("yaw_position_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check Z Altitude Control status
-                            let z_altitude_control_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL;
+                            let z_altitude_control_status =
+                                data.onboard_control_sensors_health.bits()
+                                    & MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL;
                             if z_altitude_control_status != 0 {
                                 // println!("Z Altitude Control status: OK");
-                                app.emit_all("z_altitude_control_status_ok", payload.clone()).unwrap();
+                                app.emit_all("z_altitude_control_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Z Altitude Control status: Error");
-                                app.emit_all("z_altitude_control_status_error", payload.clone()).unwrap();
+                                app.emit_all("z_altitude_control_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check X/Y Position Control status
-                            let xy_position_control_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL;
+                            let xy_position_control_status =
+                                data.onboard_control_sensors_health.bits()
+                                    & MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL;
                             if xy_position_control_status != 0 {
                                 // println!("X/Y Position Control status: OK");
-                                app.emit_all("xy_position_control_status_ok", payload.clone()).unwrap();
+                                app.emit_all("xy_position_control_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("X/Y Position Control status: Error");
-                                app.emit_all("xy_position_control_status_error", payload.clone()).unwrap();
+                                app.emit_all("xy_position_control_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check Motor Outputs/Control status
-                            let motor_output_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS;
+                            let motor_output_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS;
                             if motor_output_status != 0 {
                                 // println!("Motor Outputs/Control status: OK");
-                                app.emit_all("motor_output_status_ok", payload.clone()).unwrap();
+                                app.emit_all("motor_output_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Motor Outputs/Control status: Error");
-                                app.emit_all("motor_output_status_error", payload.clone()).unwrap();
+                                app.emit_all("motor_output_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check RC Receiver status
-                            let rc_receiver_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_RC_RECEIVER;
+                            let rc_receiver_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_RC_RECEIVER;
                             if rc_receiver_status != 0 {
                                 // println!("RC Receiver status: OK");
-                                app.emit_all("rc_receiver_status_ok", payload.clone()).unwrap();
+                                app.emit_all("rc_receiver_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("RC Receiver status: Error");
-                                app.emit_all("rc_receiver_status_error", payload.clone()).unwrap();
+                                app.emit_all("rc_receiver_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check AHRS status
-                            let ahrs_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_AHRS;
+                            let ahrs_status =
+                                data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_AHRS;
                             if ahrs_status != 0 {
                                 // println!("AHRS status: OK");
                                 app.emit_all("ahrs_status_ok", payload.clone()).unwrap();
@@ -446,63 +492,77 @@ fn init_anti_drone_connection(
                             }
 
                             // Check Terrain status
-                            let terrain_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_TERRAIN;
+                            let terrain_status =
+                                data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_TERRAIN;
                             if terrain_status != 0 {
                                 // println!("Terrain status: OK");
                                 app.emit_all("terrain_status_ok", payload.clone()).unwrap();
                             } else {
                                 // println!("Terrain status: Error");
-                                app.emit_all("terrain_status_error", payload.clone()).unwrap();
+                                app.emit_all("terrain_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check Battery status
-                            let battery_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_BATTERY;
+                            let battery_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_BATTERY;
                             if battery_status != 0 {
                                 // println!("Battery status: OK");
                                 app.emit_all("battery_status_ok", payload.clone()).unwrap();
                             } else {
                                 // println!("Battery status: Error");
-                                app.emit_all("battery_status_error", payload.clone()).unwrap();
+                                app.emit_all("battery_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check Propulsion status
-                            let propulsion_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_PROPULSION;
+                            let propulsion_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_PROPULSION;
                             if propulsion_status != 0 {
                                 // println!("Propulsion status: OK");
-                                app.emit_all("propulsion_status_ok", payload.clone()).unwrap();
+                                app.emit_all("propulsion_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Propulsion status: Error");
-                                app.emit_all("propulsion_status_error", payload.clone()).unwrap();
+                                app.emit_all("propulsion_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check GeoFence status
-                            let geofence_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_GEOFENCE;
+                            let geofence_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_GEOFENCE;
                             if geofence_status != 0 {
                                 // println!("GeoFence status: OK");
                                 app.emit_all("geofence_status_ok", payload.clone()).unwrap();
                             } else {
                                 // println!("GeoFence status: Error");
-                                app.emit_all("geofence_status_error", payload.clone()).unwrap();
+                                app.emit_all("geofence_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check Logging status
-                            let logging_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_LOGGING;
+                            let logging_status =
+                                data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_LOGGING;
                             if logging_status != 0 {
                                 // println!("Logging status: OK");
                                 app.emit_all("logging_status_ok", payload.clone()).unwrap();
                             } else {
                                 // println!("Logging status: Error");
-                                app.emit_all("logging_status_error", payload.clone()).unwrap();
+                                app.emit_all("logging_status_error", payload.clone())
+                                    .unwrap();
                             }
 
                             // Check Proximity status
-                            let proximity_status = data.onboard_control_sensors_health.bits() & MAV_SYS_STATUS_SENSOR_PROXIMITY;
+                            let proximity_status = data.onboard_control_sensors_health.bits()
+                                & MAV_SYS_STATUS_SENSOR_PROXIMITY;
                             if proximity_status != 0 {
                                 // println!("Proximity status: OK");
-                                app.emit_all("proximity_status_ok", payload.clone()).unwrap();
+                                app.emit_all("proximity_status_ok", payload.clone())
+                                    .unwrap();
                             } else {
                                 // println!("Proximity status: Error");
-                                app.emit_all("proximity_status_error", payload.clone()).unwrap();
+                                app.emit_all("proximity_status_error", payload.clone())
+                                    .unwrap();
                             }
                         }
                         // MavMessage::DRONE_PORT_INT(data) => {

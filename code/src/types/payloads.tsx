@@ -104,8 +104,8 @@ export interface CommLink {
 
 export interface NoKillZone {
   id: string;
-  name:string;
+  name: string;
   latitude: number;
   longitude: number;
-  radius: number; 
+  radius: number;
 }

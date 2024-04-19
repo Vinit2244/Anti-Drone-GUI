@@ -92,16 +92,16 @@ function CommLinkCard({
             disabled={updating}
             onClick={async () => {
               setUpdating(true);
-              if (newLink)
+              if (newLink) {
                 await invoke("add_comm_link", { newCommLink: updatedCommLink });
-              else
+                newLink = false;
+              } else
                 await invoke("update_comm_link", {
                   index,
                   newCommLink: updatedCommLink,
                 });
               setUpdating(false);
-            }}
-          >
+            }}>
             <SaveIcon />
           </IconButton>
         }
@@ -124,8 +124,7 @@ function CommLinkCard({
             alignItems: "center",
             justifyContent: "space-between",
             marginTop: "20px",
-          }}
-        >
+          }}>
           <Select
             onChange={(e) => {
               setUpdatedCommLink((draft) => {
@@ -154,8 +153,7 @@ function CommLinkCard({
                 }
               });
             }}
-            value={commType}
-          >
+            value={commType}>
             <MenuItem value={"Udp"}>Udp</MenuItem>
             <MenuItem value={"Tcp"}>Tcp</MenuItem>
             <MenuItem value={"Serial"}>Serial</MenuItem>
@@ -174,8 +172,7 @@ function CommLinkCard({
                       port[1];
                   });
                 }}
-                value={availablePaths.findIndex((path) => path[2] === usbPath)}
-              >
+                value={availablePaths.findIndex((path) => path[2] === usbPath)}>
                 <MenuItem value={-1}>Disconnected</MenuItem>
                 {availablePaths.map((path, index) => (
                   <MenuItem value={index}>{path[2]}</MenuItem>
@@ -250,6 +247,7 @@ export function CommLinks({
       }
     })();
   }, []);
+
   return (
     <>
       {commLinks.map((commLink, index) => (
@@ -282,8 +280,7 @@ export function CommLinks({
                 comm_link_type: { Tcp: { url: "127.0.0.1:5760" } },
               },
             ]);
-          }}
-        >
+          }}>
           <AddIcon />
         </IconButton>
       </Box>
