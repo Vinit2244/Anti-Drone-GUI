@@ -33,7 +33,7 @@ import { NoKillZone } from "../types/payloads";
 import { toLonLat } from "ol/proj";
 import { IsEnemyDrone } from "./IsEnemyDrone";
 import { KillButton } from "./KillButton";
-import SliderButton  from "./SliderButton";
+import {SliderButton_Kill} from "./SliderButton";
 import { invoke } from "@tauri-apps/api";
 import { isNotInNoKillZone } from "./IsNotInNoKillZone";
 
@@ -314,9 +314,11 @@ export function DroneMap({
                   noKillZones={noKillZones}
                   setKillButtonClicked={setKillButtonClicked} // added new prop for state of kill button click
                 />
-                
+              </div>
+              <div style={{ width: "100%", marginTop: "10px" }}>
+
                 {killButtonClicked && (
-                <SliderButton
+                <SliderButton_Kill
                   railText="Slide to Confirm Kill"
                   trackText="KILL"
                   disabled={!killButtonClicked}
