@@ -6,7 +6,6 @@ use mavlink::ardupilotmega::{MavLandedState, MavMessage, MavState};
 use mavlink::error::MessageReadError;
 use mavlink::MavHeader;
 
-use rusqlite::Connection;
 use settings::CommLink;
 use std::error::Error;
 use std::sync::{Mutex, MutexGuard, RwLock};
@@ -210,11 +209,7 @@ fn init_anti_drone_connection(
             return Err("Couldn't load settings".into());
         }
     };
-    let conn = match Connection::open(settings_path) {
-        Ok(conn) => conn,
-        Err(_) => return Err("Couldn't establish connection".into()),
-    };
-    let settings = settings::Settings::load(&conn)?;
+    let settings = settings::Settings::load(&settings_path)?;
     let connect_links: Vec<&CommLink> = settings
         .connection_settings
         .comm_links
@@ -587,6 +582,7 @@ fn init_anti_drone_connection(
                         //     app.emit_all(&format!("ammunition_update_{system_id}"), payload).unwrap();
                         // }
                         MavMessage::BATTERY_STATUS(data) => {
+                            print!("{:?}", data);
                             app.emit_all(
                                 &format!("battery_update_{}", header.system_id),
                                 BatteryUpdatePayload { payload: data },

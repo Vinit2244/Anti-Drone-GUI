@@ -62,6 +62,7 @@ export default function DroneBatteryIndicator({ id }: { id: string }) {
     };
   }, []);
   const batteryElement = useMemo(() => {
+    console.log(batteryState);
     if (batteryState === null) return <BatteryDetecting />;
     else if (batteryState.battery_remaining <= 20)
       return <BatteryLow percentage={batteryState.battery_remaining} />;

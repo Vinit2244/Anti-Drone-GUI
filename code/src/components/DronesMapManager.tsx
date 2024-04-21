@@ -36,22 +36,41 @@ export function DronesMapManager({
   mapRef: RefObject<RMap>;
   noKillZones: NoKillZone[];
 }) {
-  const [drones, setDrones] = useState([
-    {
-      id: "2", // Rogue
-      initialLonLat: [78.343434, 17.453434],
-      initialVelocity: { speed: 0, angle: 0 },
-      initialAltitude: 100,
-      initialVz: 0,
-    },
-    {
-      id: "7", // Friendly
-      initialLonLat: [78.353434, 17.463434],
-      initialVelocity: { speed: 0, angle: 0 },
-      initialAltitude: 0,
-      initialVz: 0,
-    },
-  ]);
+  // const [drones, setDrones] = useState([
+  //   {
+  //     id: "2", // Rogue
+  //     initialLonLat: [78.343434, 17.453434],
+  //     initialVelocity: { speed: 0, angle: 0 },
+  //     initialAltitude: 100,
+  //     initialVz: 0,
+  //   },
+  //   {
+  //     id: "7", // Friendly
+  //     initialLonLat: [78.353434, 17.463434],
+  //     initialVelocity: { speed: 0, angle: 0 },
+  //     initialAltitude: 0,
+  //     initialVz: 0,
+  //   },
+  // ]);
+
+  const [drones, setDrones] = useState(
+    [] as {
+      id: string;
+      initialLonLat: [number, number];
+      initialVelocity: { speed: number; angle: number };
+      initialVz: number;
+      initialAltitude: number;
+    }[]
+  );
+  // const [drones, setDrones] = useState<
+  //   {
+  //     id: string;
+  //     initialLonLat: number[];
+  //     initialVelocity: { speed: number; angle: number };
+  //     initialAltitude: number;
+  //     initialVz: number;
+  //   }[]
+  // >([]);
 
   console.log(drones.length);
   useEffect(() => {
@@ -59,13 +78,18 @@ export function DronesMapManager({
     console.log("Checking number of drones:", drones.length);
     if (drones.length === 2) {
       console.log("Calculating distance between drones:", drones);
-      const distance = calculateDistance(drones[0].initialLonLat, drones[1].initialLonLat);
-      console.log(`Distance between drones ${drones[0].id} and ${drones[1].id}: ${distance} meters`);
+      const distance = calculateDistance(
+        drones[0].initialLonLat,
+        drones[1].initialLonLat
+      );
+      console.log(
+        `Distance between drones ${drones[0].id} and ${drones[1].id}: ${distance} meters`
+      );
     } else {
       console.log("Number of drones is not 2:", drones.length);
     }
   }, [drones]);
-  
+
   useEffect(() => {
     const promise = listen("position_update", (event) => {
       const payload = event.payload as PositionUpdatePayload;
@@ -95,29 +119,52 @@ export function DronesMapManager({
     };
   }, []);
 
-
-  function Legend({ drones }: { drones: { id: string, initialLonLat:number[], initialVelocity: { speed: number, angle: number }, initialAltitude: number, initialVz: number }[] }) {
+  function Legend({
+    drones,
+  }: {
+    drones: {
+      id: string;
+      initialLonLat: number[];
+      initialVelocity: { speed: number; angle: number };
+      initialAltitude: number;
+      initialVz: number;
+    }[];
+  }) {
     // Calculate and display distance between drones
     if (drones.length === 2) {
-      const distance = calculateDistance(drones[0].initialLonLat, drones[1].initialLonLat);
+      const distance = calculateDistance(
+        drones[0].initialLonLat,
+        drones[1].initialLonLat
+      );
       const roundedDistance = distance.toFixed(2);
-    
+
       return (
-        <div style={{ position: "absolute", bottom: 10, right: 10, zIndex: 1, backgroundColor: "rgba(0, 0, 0, 0.65)", padding: 10, boxSizing: "content-box", borderRadius: 5, color: "white", textAlign: "center", wordWrap: "break-word" }}>
-          <img src={distanceLegendImg} alt="Distance Legend" style={{ marginBottom: 5, inlineSize: 60 }} />
-          <p style={{ margin: 0 }}>
-            {roundedDistance} m
-            </p>
+        <div
+          style={{
+            position: "absolute",
+            bottom: 10,
+            right: 10,
+            zIndex: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.65)",
+            padding: 10,
+            boxSizing: "content-box",
+            borderRadius: 5,
+            color: "white",
+            textAlign: "center",
+            wordWrap: "break-word",
+          }}>
+          <img
+            src={distanceLegendImg}
+            alt="Distance Legend"
+            style={{ marginBottom: 5, inlineSize: 60 }}
+          />
+          <p style={{ margin: 0 }}>{roundedDistance} m</p>
         </div>
       );
     } else {
       return null;
     }
   }
-  
-  
-
-  
 
   return (
     <>
