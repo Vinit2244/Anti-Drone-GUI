@@ -36,9 +36,18 @@ yarn tauri dev
 Note: WEBKIT_DISABLE_COMPOSITING_MODE env variable will be automatically set to 1 to overcome rendering bugs.
 
 ## Compiling
+
 ```bash
 yarn tauri build
 ```
+
+The generated installer varies depending on the operating system where the command is executed:
+
+- On Linux, a `.appImage` and `.deb` executables are created.
+- On Windows, a `.msi` and `.exe` executables are created.
+- On Mac, a `.app` and `.dmg` file is created.
+
+The executables is saved at `src-tauri/target/release/bundle`
 
 ## Recommended IDE Setup
 
